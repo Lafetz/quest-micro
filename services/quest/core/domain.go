@@ -7,8 +7,7 @@ import (
 type QuestStatus string
 
 const (
-	QuestStatusActive QuestStatus = "active"
-
+	QuestStatusActive    QuestStatus = "active"
 	QuestStatusCompleted QuestStatus = "completed"
 	QuestStatusFailed    QuestStatus = "failed"
 )
@@ -22,13 +21,10 @@ type Quest struct {
 	Status      QuestStatus
 }
 
-func NewQuest(id uuid.UUID, owner string, knightId uuid.UUID, name string, description string) *Quest {
+func NewQuest(owner string, knightId uuid.UUID, name string, description string) *Quest {
 
-	if id == uuid.Nil {
-		id = uuid.New()
-	}
 	return &Quest{
-		ID:          id,
+		ID:          uuid.New(),
 		Owner:       owner,
 		KnightID:    knightId,
 		Name:        name,
