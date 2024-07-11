@@ -9,3 +9,11 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_USER=user
       - POSTGRES_DB=quest
+  mongo:
+    image: 'mongo:7.0.5'
+    environment:
+      - MONGO_INITDB_DATABASE=knight
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin11
+    ports:
+      - "27017:27017"
