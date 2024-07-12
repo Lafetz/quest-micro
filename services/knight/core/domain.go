@@ -12,13 +12,13 @@ type Knight struct {
 	IsActive bool
 }
 
-func NewUser(username string, email string, password []byte) *Knight {
+func NewKnight(username string, email string, password []byte) *Knight {
 	user := &Knight{
 		Id:       uuid.New(),
 		Username: username,
 		Email:    email,
 		Password: password,
-		IsActive: false,
+		IsActive: true,
 	}
 
 	return user

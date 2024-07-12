@@ -17,14 +17,14 @@ type GrpcServer struct {
 	protoknight.UnimplementedKnightServiceServer
 }
 
-func (s *GrpcServer) Run() {
-	lis, err := net.Listen("tcp", ":"+strconv.Itoa(s.port))
+func (g *GrpcServer) Run() {
+	lis, err := net.Listen("tcp", ":"+strconv.Itoa(g.port))
 	if err != nil {
 		log.Fatalln("Failed to listen:", err)
 	}
 	grpcServer := grpc.NewServer()
-	protoknight.RegisterKnightServiceServer(grpcServer, s)
-	fmt.Println("Starting Server on port ", s.port)
+	protoknight.RegisterKnightServiceServer(grpcServer, g)
+	fmt.Println("Starting Server on port ", g.port)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalln("Grpc server failed :", err)
 	}

@@ -7,7 +7,6 @@ import (
 
 var (
 	ErrUsernameUnique = errors.New("an account with this username exists")
-	ErrDelete         = errors.New("failed to Delete user")
 	ErrEmailUnique    = errors.New("an account with this email exists")
 )
 
@@ -25,6 +24,9 @@ func (k *KnightService) KnightStatus(ctx context.Context, name string) (bool, er
 func (k *KnightService) UpdateStatus(ctx context.Context, knightID string, active bool) error {
 	return k.repo.UpdateStatus(ctx, knightID, active)
 }
-func (k *KnightService) AddKnight(ctx context.Context, knight Knight) (*Knight, error) {
+func (k *KnightService) AddKnight(ctx context.Context, knight *Knight) (*Knight, error) {
 	return k.repo.AddKnight(ctx, knight)
+}
+func NewKnightService(repo KnightRepository) *KnightService {
+	return &KnightService{repo}
 }
