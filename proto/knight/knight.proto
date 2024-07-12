@@ -1,0 +1,33 @@
+syntax = "proto3";
+package proto;
+
+option go_package = "github.com/lafetz/quest-demo/knight/proto";
+message AddKnightReq {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+  string isActive = 4;
+}
+
+message AddKnightRes {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  string password = 4;
+  string isActive = 5;
+}
+message knightStatusReq {
+  string username = 1;
+}
+message knightStatusRes {
+  bool isActive = 1;
+}
+message updateStatusReq {
+  bool active = 1;
+}
+message updateStatusRes {}
+service knightService {
+  rpc AddKnight(AddKnightReq) returns (AddKnightRes);
+  rpc knightStatus(knightStatusReq) returns (knightStatusRes);
+  rpc updateStatus(updateStatusReq) returns (updateStatusRes);
+}

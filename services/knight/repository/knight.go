@@ -4,7 +4,6 @@ import (
 	"context"
 	"regexp"
 	"strings"
-	"time"
 
 	"github.com/google/uuid"
 	commonerrors "github.com/lafetz/quest-demo/common/errors"
@@ -14,32 +13,30 @@ import (
 )
 
 type knightMongo struct {
-	Id        uuid.UUID `bson:"_id,omitempty"`
-	Username  string    `bson:"username" unique:"true"`
-	Email     string    `bson:"email" unique:"true"`
-	Password  []byte    `bson:"password"`
-	IsActive  bool      `bson:"isActive"`
-	CreatedAt time.Time `bson:"createdAt"`
+	Id       uuid.UUID `bson:"_id,omitempty"`
+	Username string    `bson:"username" unique:"true"`
+	Email    string    `bson:"email" unique:"true"`
+	Password []byte    `bson:"password"`
+	IsActive bool      `bson:"isActive"`
 }
 
 // domain converts knightMongo to Knight
 func (u *knightMongo) domain() *knight.Knight {
 	return &knight.Knight{
-		Id:        u.Id,
-		Username:  u.Username,
-		Email:     u.Email,
-		Password:  u.Password,
-		CreatedAt: u.CreatedAt,
+		Id:       u.Id,
+		Username: u.Username,
+		Email:    u.Email,
+		Password: u.Password,
+		IsActive: u.IsActive,
 	}
 }
 
 func newUserMongo(u *knight.Knight) *knightMongo {
 	return &knightMongo{
-		Id:        u.Id,
-		Username:  u.Username,
-		Email:     u.Email,
-		Password:  u.Password,
-		CreatedAt: u.CreatedAt,
+		Id:       u.Id,
+		Username: u.Username,
+		Email:    u.Email,
+		Password: u.Password,
 	}
 }
 
@@ -82,7 +79,21 @@ func (store *Store) GetKnight(ctx context.Context, username string) (*knight.Kni
 	}
 
 	return knightData.domain(), nil
+}
 
+func (store *Store) UpdateStatus(ctx context.Context, knightID string, active bool) error {
+	filter := bson.D{{Key: "_id", Value: knightID}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "isActive", Value: active}}}}
+
+	var knightData knightMongo
+	err := store.knights.FindOneAndUpdate(ctx, filter, update).Decode(&knightData)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return commonerrors.ErrKnightNotFound
+		}
+		return err
+	}
+	return nil
 }
 
 func extractDuplicateKey(errorMessage string) string {
