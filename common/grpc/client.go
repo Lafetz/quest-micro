@@ -2,7 +2,6 @@ package commongrpc
 
 import (
 	"context"
-	"log"
 	"time"
 
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
@@ -11,7 +10,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func NewGrpcConnection(host string) *grpc.ClientConn {
+func NewGrpcConnection(host string) (*grpc.ClientConn, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	retryOpts := grpc.WithUnaryInterceptor(
@@ -23,7 +22,7 @@ func NewGrpcConnection(host string) *grpc.ClientConn {
 	Dialopts = append(Dialopts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	conn, err := grpc.DialContext(ctx, host, Dialopts...)
 	if err != nil {
-		log.Fatalln("Failed to create connection", err)
+		return nil, err
 	}
-	return conn
+	return conn, nil
 }

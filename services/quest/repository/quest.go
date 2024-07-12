@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 
 	"github.com/google/uuid"
 	quest "github.com/lafetz/quest-demo/services/quest/core"
@@ -32,12 +34,22 @@ func (store *Store) GetAssignedQuests(ctx context.Context, kid uuid.UUID) ([]*qu
 }
 
 func (store *Store) CompleteQuest(ctx context.Context, questId uuid.UUID) error {
-	return store.quests.CompleteQuest(ctx, questId)
+	err := store.quests.CompleteQuest(ctx, questId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return quest.ErrNotFound
+		}
+		return err
+	}
+	return nil
 }
 
 func (store *Store) GetQuest(ctx context.Context, questId uuid.UUID) (*quest.Quest, error) {
 	q, err := store.quests.GetQuest(ctx, questId)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, quest.ErrNotFound
+		}
 		return nil, err
 	}
 	questEnt, err := mapQuest(q)

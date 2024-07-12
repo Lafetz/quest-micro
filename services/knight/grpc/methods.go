@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log"
 
-	"github.com/google/uuid"
 	commonerrors "github.com/lafetz/quest-demo/common/errors"
 	protoknight "github.com/lafetz/quest-demo/proto/knight"
 	knight "github.com/lafetz/quest-demo/services/knight/core"
@@ -47,9 +46,7 @@ func (g *GrpcServer) AddKnight(ctx context.Context, req *protoknight.AddKnightRe
 }
 func (g *GrpcServer) GetKnightStatus(ctx context.Context, req *protoknight.KnightStatusReq) (*protoknight.KnightStatusRes, error) {
 	if req == nil {
-
 		return nil, status.Errorf(codes.InvalidArgument, "nil req ")
-
 	}
 	validationErrors := validateGet(req.Username)
 	if len(validationErrors) > 0 {
@@ -61,7 +58,6 @@ func (g *GrpcServer) GetKnightStatus(ctx context.Context, req *protoknight.Knigh
 	}
 	isActive, err := g.service.KnightStatus(ctx, req.Username)
 	if err != nil && errors.Is(err, commonerrors.ErrKnightNotFound) {
-		log.Print(err)
 
 		return nil, status.Errorf(codes.NotFound, err.Error())
 
@@ -76,8 +72,8 @@ func (g *GrpcServer) UpdateStatus(ctx context.Context, req *protoknight.UpdateSt
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "nil req ")
 	}
-	testId := uuid.New()
-	err := g.service.UpdateStatus(ctx, testId.String(), req.Active)
+	testId := "87a53040-5eae-4048-b511-1438d5af69b5"
+	err := g.service.UpdateStatus(ctx, testId, req.Active)
 	if err != nil && errors.Is(err, commonerrors.ErrKnightNotFound) {
 
 		log.Print(err)

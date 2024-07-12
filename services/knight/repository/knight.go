@@ -37,6 +37,7 @@ func newUserMongo(u *knight.Knight) *knightMongo {
 		Username: u.Username,
 		Email:    u.Email,
 		Password: u.Password,
+		IsActive: u.IsActive,
 	}
 }
 

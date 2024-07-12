@@ -1,6 +1,7 @@
 package web
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -44,7 +45,12 @@ func (app *App) addQuest(c *gin.Context) {
 		questReq.KnightID, questReq.Name, questReq.Description)
 	qst, err := app.questService.AddQuest(c, *questD)
 	if err != nil {
-
+		if errors.Is(err, quest.ErrKntUnavailable) {
+			c.JSON(http.StatusNotFound, gin.H{
+				"Error": err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": "internal server Error",
 		})
@@ -90,6 +96,12 @@ func (app *App) completeQuest(c *gin.Context) {
 	}
 	err = app.questService.CompleteQuest(c, id)
 	if err != nil {
+		if errors.Is(err, quest.ErrNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{
+				"Error": err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": "internal server Error",
 		})
@@ -110,6 +122,12 @@ func (app *App) getQuest(c *gin.Context) {
 	}
 	qst, err := app.questService.GetQuest(c, id)
 	if err != nil {
+		if errors.Is(err, quest.ErrNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{
+				"Error": err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": "internal server Error",
 		})

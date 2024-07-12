@@ -9,6 +9,7 @@ import (
 
 var (
 	ErrKntUnavailable = errors.New("knight is currently unavailable")
+	ErrNotFound       = errors.New("quest not found")
 )
 
 type QuestService struct {
