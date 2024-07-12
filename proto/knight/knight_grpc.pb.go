@@ -4,7 +4,7 @@
 // - protoc             v5.26.0
 // source: proto/knight/knight.proto
 
-package proto
+package protoknight
 
 import (
 	context "context"
@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	KnightService_AddKnight_FullMethodName    = "/proto.knightService/AddKnight"
-	KnightService_KnightStatus_FullMethodName = "/proto.knightService/knightStatus"
-	KnightService_UpdateStatus_FullMethodName = "/proto.knightService/updateStatus"
+	KnightService_AddKnight_FullMethodName    = "/protoknight.knightService/AddKnight"
+	KnightService_KnightStatus_FullMethodName = "/protoknight.knightService/knightStatus"
+	KnightService_UpdateStatus_FullMethodName = "/protoknight.knightService/updateStatus"
 )
 
 // KnightServiceClient is the client API for KnightService service.
@@ -162,7 +162,7 @@ func _KnightService_UpdateStatus_Handler(srv interface{}, ctx context.Context, d
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var KnightService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.knightService",
+	ServiceName: "protoknight.knightService",
 	HandlerType: (*KnightServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
