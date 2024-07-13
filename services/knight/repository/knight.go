@@ -82,8 +82,8 @@ func (store *Store) GetKnight(ctx context.Context, username string) (*knight.Kni
 	return knightData.domain(), nil
 }
 
-func (store *Store) UpdateStatus(ctx context.Context, knightID string, active bool) error {
-	filter := bson.D{{Key: "_id", Value: knightID}}
+func (store *Store) UpdateStatus(ctx context.Context, username string, active bool) error {
+	filter := bson.D{{Key: "username", Value: username}}
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "isActive", Value: active}}}}
 
 	var knightData knightMongo

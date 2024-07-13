@@ -3,6 +3,7 @@ package web
 import (
 	"errors"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
@@ -13,17 +14,11 @@ import (
 type addQuestReq struct {
 	KnightID    uuid.UUID `json:"knightId"`
 	Name        string    `json:"name"`
+	Owner       string    `json:"owner"`
 	Description string    `json:"description"`
 }
 
 func (app *App) addQuest(c *gin.Context) {
-	//user, exists := c.Get("user")
-	// if !exists {
-	// 	c.JSON(http.StatusUnauthorized, gin.H{
-	// 		"Error": "Unauthorized",
-	// 	})
-	// 	return
-	// }
 	var questReq addQuestReq
 	if err := c.ShouldBind(&questReq); err != nil {
 		_, ok := err.(validator.ValidationErrors)
@@ -40,8 +35,8 @@ func (app *App) addQuest(c *gin.Context) {
 		})
 		return
 	}
-	name := "sir. ironborn"
-	questD := quest.NewQuest(name,
+
+	questD := quest.NewQuest(questReq.Owner,
 		questReq.KnightID, questReq.Name, questReq.Description)
 	qst, err := app.questService.AddQuest(c, *questD)
 	if err != nil {
@@ -51,6 +46,7 @@ func (app *App) addQuest(c *gin.Context) {
 			})
 			return
 		}
+		app.logger.Error("err", err, "stack", debug.Stack())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": "internal server Error",
 		})
@@ -74,7 +70,7 @@ func (app *App) getAssignedQuests(c *gin.Context) {
 
 	quests, err := app.questService.GetAssignedQuests(c, id)
 	if err != nil {
-
+		app.logger.Error("err", err, "stack", debug.Stack())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": "internal server Error",
 		})
@@ -102,6 +98,7 @@ func (app *App) completeQuest(c *gin.Context) {
 			})
 			return
 		}
+		app.logger.Error("err", err, "stack", debug.Stack())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": "internal server Error",
 		})
@@ -128,6 +125,7 @@ func (app *App) getQuest(c *gin.Context) {
 			})
 			return
 		}
+		app.logger.Error("err", err, "stack", debug.Stack())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": "internal server Error",
 		})

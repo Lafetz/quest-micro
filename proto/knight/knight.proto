@@ -22,6 +22,7 @@ message KnightStatusRes {
 }
 message UpdateStatusReq {
   bool active = 1;
+  string username = 2;
 }
 message UpdateStatusRes {}
 

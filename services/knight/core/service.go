@@ -21,8 +21,8 @@ func (k *KnightService) KnightStatus(ctx context.Context, name string) (bool, er
 	}
 	return knight.IsActive, nil
 }
-func (k *KnightService) UpdateStatus(ctx context.Context, knightID string, active bool) error {
-	return k.repo.UpdateStatus(ctx, knightID, active)
+func (k *KnightService) UpdateStatus(ctx context.Context, username string, active bool) error {
+	return k.repo.UpdateStatus(ctx, username, active)
 }
 func (k *KnightService) AddKnight(ctx context.Context, knight *Knight) (*Knight, error) {
 	return k.repo.AddKnight(ctx, knight)

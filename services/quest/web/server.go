@@ -1,6 +1,8 @@
 package web
 
 import (
+	"log/slog"
+
 	"github.com/gin-gonic/gin"
 	quest "github.com/lafetz/quest-demo/services/quest/core"
 )
@@ -9,13 +11,15 @@ type App struct {
 	questService quest.QuestServiceApi
 	gin          *gin.Engine
 	port         int
+	logger       *slog.Logger
 }
 
-func NewApp(questService quest.QuestServiceApi, port int) *App {
+func NewApp(questService quest.QuestServiceApi, port int, logger *slog.Logger) *App {
 	a := &App{
 		gin:          gin.Default(),
 		questService: questService,
 		port:         port,
+		logger:       logger,
 	}
 	a.gin.Use(corsMiddleware())
 	a.initAppRoutes()

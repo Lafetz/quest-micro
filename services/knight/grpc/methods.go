@@ -3,7 +3,7 @@ package grpcserver
 import (
 	"context"
 	"errors"
-	"log"
+	"runtime/debug"
 
 	commonerrors "github.com/lafetz/quest-demo/common/errors"
 	protoknight "github.com/lafetz/quest-demo/proto/knight"
@@ -29,7 +29,7 @@ func (g *GrpcServer) AddKnight(ctx context.Context, req *protoknight.AddKnightRe
 	hashedPassword, err := hashPassword(req.Password)
 	if err != nil {
 
-		log.Print(err)
+		g.logger.Error("err", err, "stack", debug.Stack())
 
 		return nil, status.Errorf(codes.Internal, "internal error")
 	}
@@ -39,7 +39,7 @@ func (g *GrpcServer) AddKnight(ctx context.Context, req *protoknight.AddKnightRe
 		if errors.Is(err, knight.ErrEmailUnique) || errors.Is(err, knight.ErrUsernameUnique) {
 			return nil, status.Errorf(codes.AlreadyExists, err.Error())
 		}
-		log.Print(err)
+		g.logger.Error("err", err, "stack", debug.Stack())
 		return nil, status.Errorf(codes.Internal, "internal error")
 	}
 	return &protoknight.AddKnightRes{Id: kntR.Id.String(), Username: kntR.Username, Email: kntR.Email, IsActive: kntR.IsActive}, nil
@@ -62,7 +62,8 @@ func (g *GrpcServer) GetKnightStatus(ctx context.Context, req *protoknight.Knigh
 		return nil, status.Errorf(codes.NotFound, err.Error())
 
 	} else if err != nil {
-		log.Print(err)
+
+		g.logger.Error("err", err, "stack", debug.Stack())
 
 		return nil, status.Errorf(codes.Internal, "internal error")
 	}
@@ -72,15 +73,14 @@ func (g *GrpcServer) UpdateStatus(ctx context.Context, req *protoknight.UpdateSt
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "nil req ")
 	}
-	testId := "87a53040-5eae-4048-b511-1438d5af69b5"
-	err := g.service.UpdateStatus(ctx, testId, req.Active)
+	err := g.service.UpdateStatus(ctx, req.Username, req.Active)
 	if err != nil && errors.Is(err, commonerrors.ErrKnightNotFound) {
 
-		log.Print(err)
+		g.logger.Error("err", err, "stack", debug.Stack())
 		return nil, status.Errorf(codes.NotFound, err.Error())
 	} else if err != nil {
 
-		log.Print(err)
+		g.logger.Error("err", err, "stack", debug.Stack())
 		return nil, status.Errorf(codes.Internal, "internal error")
 	}
 	return &protoknight.UpdateStatusRes{}, nil
