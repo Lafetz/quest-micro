@@ -55,10 +55,10 @@ func (ns NullQuestStatus) Value() (driver.Value, error) {
 }
 
 type Quest struct {
-	ID          uuid.UUID
-	Owner       string
-	KnightID    uuid.UUID
-	Name        string
-	Description string
-	Status      QuestStatus
+	ID             uuid.UUID
+	Owner          string
+	KnightUsername string
+	Name           string
+	Description    string
+	Status         QuestStatus
 }

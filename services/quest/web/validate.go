@@ -8,6 +8,7 @@ import (
 
 func ValidateModel(err error) map[string]string {
 	errors := make(map[string]string)
+
 	for _, err := range err.(validator.ValidationErrors) {
 
 		errors[strings.ToLower(err.Field())] = errorMsgs(err.Tag(), err.Param())
@@ -18,6 +19,7 @@ func ValidateModel(err error) map[string]string {
 }
 
 func errorMsgs(tag string, value string) string {
+	print(tag, value)
 	switch tag {
 	case "required":
 		return "This field is required"

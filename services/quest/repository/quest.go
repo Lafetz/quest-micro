@@ -12,7 +12,7 @@ import (
 
 func (store *Store) AddQuest(ctx context.Context, qst quest.Quest) (*quest.Quest, error) {
 
-	q, err := store.quests.AddQuest(ctx, gen.AddQuestParams{ID: qst.ID, Owner: qst.Owner, KnightID: qst.KnightID,
+	q, err := store.quests.AddQuest(ctx, gen.AddQuestParams{ID: qst.ID, Owner: qst.Owner, KnightUsername: qst.KntUsername,
 		Name: qst.Name, Description: qst.Description, Status: gen.QuestStatus(qst.Status)})
 	if err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func (store *Store) AddQuest(ctx context.Context, qst quest.Quest) (*quest.Quest
 	return questEnt, err
 }
 
-func (store *Store) GetAssignedQuests(ctx context.Context, kid uuid.UUID) ([]*quest.Quest, error) {
+func (store *Store) GetAssignedQuests(ctx context.Context, kid string) ([]*quest.Quest, error) {
 	q, err := store.quests.GetAssignedQuests(ctx, kid)
 	if err != nil {
 		return nil, err

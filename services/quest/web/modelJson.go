@@ -8,7 +8,7 @@ import (
 type Quest struct {
 	ID          uuid.UUID         `json:"id"`
 	Owner       string            `json:"owner"`
-	KnightID    uuid.UUID         `json:"knightId"`
+	KntUsername string            `json:"KntUsername"`
 	Name        string            `json:"name"`
 	Description string            `json:"description"`
 	Status      quest.QuestStatus `json:"status"`
@@ -18,7 +18,7 @@ func toJsonQuest(qst *quest.Quest) Quest {
 	return Quest{
 		ID:          qst.ID,
 		Owner:       qst.Owner,
-		KnightID:    qst.KnightID,
+		KntUsername: qst.KntUsername,
 		Name:        qst.Name,
 		Description: qst.Description,
 		Status:      qst.Status,

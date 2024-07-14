@@ -3,7 +3,6 @@ package web
 import (
 	"errors"
 	"net/http"
-	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
@@ -12,10 +11,13 @@ import (
 )
 
 type addQuestReq struct {
-	KnightID    uuid.UUID `json:"knightId"`
-	Name        string    `json:"name"`
-	Owner       string    `json:"owner"`
-	Description string    `json:"description"`
+	KntUsername string `json:"KntUsername" binding:"required"`
+	Name        string `json:"name" binding:"required"`
+	Owner       string `json:"owner" binding:"required"`
+	Description string `json:"description" binding:"required"`
+}
+type getQuestsReq struct {
+	KntUsername string `json:"KntUsername" binding:"required"`
 }
 
 func (app *App) addQuest(c *gin.Context) {
@@ -37,7 +39,7 @@ func (app *App) addQuest(c *gin.Context) {
 	}
 
 	questD := quest.NewQuest(questReq.Owner,
-		questReq.KnightID, questReq.Name, questReq.Description)
+		questReq.KntUsername, questReq.Name, questReq.Description)
 	qst, err := app.questService.AddQuest(c, *questD)
 	if err != nil {
 		if errors.Is(err, quest.ErrKntUnavailable) {
@@ -46,7 +48,7 @@ func (app *App) addQuest(c *gin.Context) {
 			})
 			return
 		}
-		app.logger.Error("err", err, "stack", debug.Stack())
+		app.logger.Error("err", err, "stack")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": "internal server Error",
 		})
@@ -60,17 +62,25 @@ func (app *App) addQuest(c *gin.Context) {
 
 }
 func (app *App) getAssignedQuests(c *gin.Context) {
+	var questReq getQuestsReq
+	if err := c.ShouldBind(&questReq); err != nil {
+		_, ok := err.(validator.ValidationErrors)
 
-	id, err := uuid.Parse("temo user id")
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"Error": "error parsing id uuid",
+		if ok {
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"Errors": ValidateModel(err),
+			})
+			return
+
+		}
+		c.JSON(http.StatusBadRequest, gin.H{
+			"Error": "Error processing request body",
 		})
+		return
 	}
-
-	quests, err := app.questService.GetAssignedQuests(c, id)
+	quests, err := app.questService.GetAssignedQuests(c, questReq.KntUsername)
 	if err != nil {
-		app.logger.Error("err", err, "stack", debug.Stack())
+		app.logger.Error("err", err, "stack")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": "internal server Error",
 		})
@@ -98,7 +108,7 @@ func (app *App) completeQuest(c *gin.Context) {
 			})
 			return
 		}
-		app.logger.Error("err", err, "stack", debug.Stack())
+		app.logger.Error("err", err, "stack")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": "internal server Error",
 		})
@@ -125,7 +135,7 @@ func (app *App) getQuest(c *gin.Context) {
 			})
 			return
 		}
-		app.logger.Error("err", err, "stack", debug.Stack())
+		app.logger.Error("err", err, "stack")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": "internal server Error",
 		})

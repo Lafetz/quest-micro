@@ -1,6 +1,13 @@
 version: '3.9'
 
 services:
+  quest:
+    build: .
+    container_name: quest
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
   postgres:
     image: postgres:14-alpine
     ports:
@@ -17,3 +24,16 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=admin11
     ports:
       - "27017:27017"
+  prometheus:
+    image: prom/prometheus:v2.40.7
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+
+  # jaeger:
+  #   image: jaegertracing/all-in-one:1.40.0
+  #   ports:
+  #     - "16686:16686"
+  #     - "14268:14268"

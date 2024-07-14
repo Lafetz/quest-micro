@@ -5,7 +5,7 @@ db/migrations/new:
 .PHONY: db/migrations/up
 db/migrations/up: confirm
 	@echo 'Running up migrations...'
-	migrate -path ./db/migrations -database ${DB_DSN} up
+	migrate -path ./db/migrations -database postgresql://user:password@localhost:5432/quest?sslmode=disable up
 
 proto-knight:
 	protoc --go_out=. --go_opt=paths=source_relative \

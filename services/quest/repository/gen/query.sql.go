@@ -12,25 +12,25 @@ import (
 )
 
 const AddQuest = `-- name: AddQuest :one
-INSERT INTO quests (id, owner, knight_id, name, description, status)
+INSERT INTO quests (id, owner, knight_username, name, description, status)
 VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, owner, knight_id, name, description, status
+RETURNING id, owner, knight_username, name, description, status
 `
 
 type AddQuestParams struct {
-	ID          uuid.UUID
-	Owner       string
-	KnightID    uuid.UUID
-	Name        string
-	Description string
-	Status      QuestStatus
+	ID             uuid.UUID
+	Owner          string
+	KnightUsername string
+	Name           string
+	Description    string
+	Status         QuestStatus
 }
 
 func (q *Queries) AddQuest(ctx context.Context, arg AddQuestParams) (Quest, error) {
 	row := q.db.QueryRowContext(ctx, AddQuest,
 		arg.ID,
 		arg.Owner,
-		arg.KnightID,
+		arg.KnightUsername,
 		arg.Name,
 		arg.Description,
 		arg.Status,
@@ -39,7 +39,7 @@ func (q *Queries) AddQuest(ctx context.Context, arg AddQuestParams) (Quest, erro
 	err := row.Scan(
 		&i.ID,
 		&i.Owner,
-		&i.KnightID,
+		&i.KnightUsername,
 		&i.Name,
 		&i.Description,
 		&i.Status,
@@ -59,13 +59,13 @@ func (q *Queries) CompleteQuest(ctx context.Context, id uuid.UUID) error {
 }
 
 const GetAssignedQuests = `-- name: GetAssignedQuests :many
-SELECT id, owner, knight_id, name, description, status
+SELECT id, owner, knight_username, name, description, status
 FROM quests
-WHERE knight_id = $1
+WHERE knight_username = $1
 `
 
-func (q *Queries) GetAssignedQuests(ctx context.Context, knightID uuid.UUID) ([]Quest, error) {
-	rows, err := q.db.QueryContext(ctx, GetAssignedQuests, knightID)
+func (q *Queries) GetAssignedQuests(ctx context.Context, knightUsername string) ([]Quest, error) {
+	rows, err := q.db.QueryContext(ctx, GetAssignedQuests, knightUsername)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (q *Queries) GetAssignedQuests(ctx context.Context, knightID uuid.UUID) ([]
 		if err := rows.Scan(
 			&i.ID,
 			&i.Owner,
-			&i.KnightID,
+			&i.KnightUsername,
 			&i.Name,
 			&i.Description,
 			&i.Status,
@@ -95,7 +95,7 @@ func (q *Queries) GetAssignedQuests(ctx context.Context, knightID uuid.UUID) ([]
 }
 
 const GetQuest = `-- name: GetQuest :one
-SELECT id, owner, knight_id, name, description, status
+SELECT id, owner, knight_username, name, description, status
 FROM quests
 WHERE id = $1
 `
@@ -106,7 +106,7 @@ func (q *Queries) GetQuest(ctx context.Context, id uuid.UUID) (Quest, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Owner,
-		&i.KnightID,
+		&i.KnightUsername,
 		&i.Name,
 		&i.Description,
 		&i.Status,

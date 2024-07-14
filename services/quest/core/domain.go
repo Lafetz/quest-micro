@@ -15,18 +15,18 @@ const (
 type Quest struct {
 	ID          uuid.UUID
 	Owner       string
-	KnightID    uuid.UUID
+	KntUsername string
 	Name        string
 	Description string
 	Status      QuestStatus
 }
 
-func NewQuest(owner string, knightId uuid.UUID, name string, description string) *Quest {
+func NewQuest(owner string, KntUsername string, name string, description string) *Quest {
 
 	return &Quest{
 		ID:          uuid.New(),
 		Owner:       owner,
-		KnightID:    knightId,
+		KntUsername: KntUsername,
 		Name:        name,
 		Description: description,
 		Status:      QuestStatusActive,
