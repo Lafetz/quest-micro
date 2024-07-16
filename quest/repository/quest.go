@@ -6,8 +6,8 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
-	quest "github.com/lafetz/quest-demo/services/quest/core"
-	"github.com/lafetz/quest-demo/services/quest/repository/gen"
+	quest "github.com/lafetz/quest-demo/quest/core"
+	"github.com/lafetz/quest-demo/quest/repository/gen"
 )
 
 func (store *Store) AddQuest(ctx context.Context, qst quest.Quest) (*quest.Quest, error) {

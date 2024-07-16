@@ -8,8 +8,8 @@ import (
 	"strconv"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
+	knight "github.com/lafetz/quest-demo/knight/core"
 	protoknight "github.com/lafetz/quest-demo/proto/knight"
-	knight "github.com/lafetz/quest-demo/services/knight/core"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

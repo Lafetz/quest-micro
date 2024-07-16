@@ -6,8 +6,8 @@ import (
 	"runtime/debug"
 
 	commonerrors "github.com/lafetz/quest-demo/common/errors"
+	knight "github.com/lafetz/quest-demo/knight/core"
 	protoknight "github.com/lafetz/quest-demo/proto/knight"
-	knight "github.com/lafetz/quest-demo/services/knight/core"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

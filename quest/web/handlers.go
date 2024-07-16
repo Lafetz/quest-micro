@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 	"github.com/google/uuid"
-	quest "github.com/lafetz/quest-demo/services/quest/core"
+	quest "github.com/lafetz/quest-demo/quest/core"
 )
 
 type addQuestReq struct {

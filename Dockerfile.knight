@@ -1,0 +1,38 @@
+FROM golang:1.22.3-alpine3.18 as builder
+
+
+ENV APP_HOME=/go/src/knight
+
+WORKDIR "${APP_HOME}"
+
+
+COPY ./go.mod ./go.sum ./ 
+
+
+RUN go mod download
+RUN go mod verify
+
+
+
+COPY ./knight ./knight
+COPY ./common ./common
+COPY ./proto ./proto
+COPY ./cmd/knight ./cmd/knight
+
+
+
+
+RUN go build -o ./bin/knight ./cmd/knight
+
+FROM alpine:latest
+
+ENV APP_HOME=/go/src/knight
+RUN mkdir -p "${APP_HOME}"
+
+WORKDIR "${APP_HOME}"
+
+COPY --from=builder "${APP_HOME}"/bin/knight $APP_HOME
+
+EXPOSE 8080
+
+CMD ["./knight"]

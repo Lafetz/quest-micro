@@ -6,20 +6,25 @@ import (
 )
 
 var LogLevels = map[string]slog.Level{
-	"debug": slog.LevelDebug,
-	"info":  slog.LevelInfo,
-	"warn":  slog.LevelWarn,
-	"error": slog.LevelError,
+	"dev":  slog.LevelDebug,
+	"prod": slog.LevelWarn,
 }
 
-func NewLogger(level string) *slog.Logger {
-
-	logLevel := LogLevels[level]
-
-	logHandler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		AddSource: true,
-		Level:     logLevel,
-	})
+func NewLogger(env string) *slog.Logger {
+	logLevel := LogLevels[env]
+	var logHandler slog.Handler
+	switch env {
+	case "dev":
+		logHandler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+			AddSource: true,
+			Level:     logLevel,
+		})
+	default:
+		logHandler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			AddSource: true,
+			Level:     logLevel,
+		})
+	}
 
 	logger := slog.New(logHandler)
 	return logger

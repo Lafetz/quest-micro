@@ -1,28 +1,35 @@
 package main
 
 import (
-	"os"
+	"log"
 
 	"github.com/lafetz/quest-demo/common/logger"
-	knight "github.com/lafetz/quest-demo/services/knight/core"
-	grpcserver "github.com/lafetz/quest-demo/services/knight/grpc"
-	"github.com/lafetz/quest-demo/services/knight/repository"
+	configKnt "github.com/lafetz/quest-demo/knight/config"
+	knight "github.com/lafetz/quest-demo/knight/core"
+	grpcserver "github.com/lafetz/quest-demo/knight/grpc"
+	"github.com/lafetz/quest-demo/knight/repository"
 )
 
 func main() {
-	log := logger.NewLogger("debug")
-	mongo, err := repository.NewDb("mongodb://admin:admin11@localhost:27017/knight?authSource=admin")
+
+	config, err := configKnt.NewConfig()
 	if err != nil {
-		log.Error(err.Error())
-		os.Exit(1)
+		log.Fatal(err)
 	}
+	logger := logger.NewLogger(config.Env)
+	mongo, err := repository.NewDb(config.DbUrl)
+	if err != nil {
+		log.Fatal(err)
+
+	}
+
 	store, err := repository.NewStore(mongo)
 	if err != nil {
-		log.Error(err.Error())
-		os.Exit(1)
+		log.Fatal(err)
+
 	}
 	srv := knight.NewKnightService(store)
 
-	grpc := grpcserver.NewGrpcServer(srv, 8080, log)
+	grpc := grpcserver.NewGrpcServer(srv, 8080, logger)
 	grpc.Run()
 }

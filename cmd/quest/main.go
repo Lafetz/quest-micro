@@ -1,13 +1,14 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"github.com/lafetz/quest-demo/common/logger"
-	quest "github.com/lafetz/quest-demo/services/quest/core"
-	"github.com/lafetz/quest-demo/services/quest/repository"
-	"github.com/lafetz/quest-demo/services/quest/web"
-	// "github.com/lafetz/quest-demo/services/knight/repository"
+	configqst "github.com/lafetz/quest-demo/quest/config"
+	quest "github.com/lafetz/quest-demo/quest/core"
+	"github.com/lafetz/quest-demo/quest/repository"
+	"github.com/lafetz/quest-demo/quest/web"
 )
 
 type MockKnightSrv struct{}
@@ -16,8 +17,12 @@ func (m *MockKnightSrv) GetKnightStatus(string) (bool, error) {
 	return true, nil
 }
 func main() {
-	log := logger.NewLogger("debug")
-	db, err := repository.OpenDB("postgresql://user:password@postgres/quest?sslmode=disable")
+	config, err := configqst.NewConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log := logger.NewLogger(config.Env)
+	db, err := repository.OpenDB(config.DbUrl)
 	store := repository.NewDb(db)
 	if err != nil {
 		log.Error(err.Error())
@@ -32,3 +37,5 @@ func main() {
 		os.Exit(1)
 	}
 }
+
+//""

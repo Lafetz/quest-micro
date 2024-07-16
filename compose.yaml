@@ -1,13 +1,31 @@
 version: '3.9'
-
 services:
+  knight:
+    build: 
+      context: ./.
+      dockerfile: Dockerfile.knight
+    container_name: knight
+    depends_on:
+      - mongo
+    ports:
+      - 8080:8080
+    environment:
+      - DB_URL=mongodb://admin:admin11@mongo/knight?authSource=admin
+      - ENV=dev
+      - PORT=8080
   quest:
-    build: .
+    build: 
+      context: ./.
+      dockerfile: Dockerfile.quest
     container_name: quest
     depends_on:
       - postgres
     ports:
-      - 8080:8080
+      - 4000:4000
+    environment:
+      - DB_URL=postgresql://user:password@postgres/quest?sslmode=disable
+      - ENV=dev
+      - PORT=4000
   postgres:
     image: postgres:14-alpine
     ports:
@@ -22,18 +40,4 @@ services:
       - MONGO_INITDB_DATABASE=knight
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin11
-    ports:
-      - "27017:27017"
-  prometheus:
-    image: prom/prometheus:v2.40.7
-    ports:
-      - 9090:9090
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
 
-
-  # jaeger:
-  #   image: jaegertracing/all-in-one:1.40.0
-  #   ports:
-  #     - "16686:16686"
-  #     - "14268:14268"
