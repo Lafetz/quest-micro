@@ -1,7 +1,6 @@
 package grpcserver
 
 import (
-	"log"
 	"log/slog"
 	"net"
 	"os"
@@ -14,6 +13,8 @@ import (
 	knight "github.com/lafetz/quest-micro/knight/core"
 	protoknight "github.com/lafetz/quest-micro/proto/knight"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
 type GrpcServer struct {
@@ -26,29 +27,35 @@ type GrpcServer struct {
 }
 
 func (g *GrpcServer) Run() {
-
+	//time.Sleep(*sleep)
 	lis, err := net.Listen("tcp", ":"+strconv.Itoa(g.port))
 	if err != nil {
-		log.Fatalln("Failed to listen:", err)
+		g.logger.Error("Failed to listen:", "error", err)
+		return
 	}
 	grpcPanicRecoveryHandler := commongrpc.PanicRecoveryGrpc(g.logger)
 	grpcServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
 		recovery.UnaryServerInterceptor(recovery.WithRecoveryHandler(grpcPanicRecoveryHandler)),
 	))
 	protoknight.RegisterKnightServiceServer(grpcServer, g)
-
+	healthServer := health.NewServer()
+	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
 	go func() {
+		healthServer.SetServingStatus(g.name, grpc_health_v1.HealthCheckResponse_SERVING)
 		if err := grpcServer.Serve(lis); err != nil {
 			g.logger.Error("Grpc server failed", "error", err.Error())
 		}
 	}()
-	g.gracefulStop(grpcServer)
+
+	g.gracefulStop(grpcServer, healthServer)
 
 }
-func (g *GrpcServer) gracefulStop(grpcServer *grpc.Server) {
+func (g *GrpcServer) gracefulStop(grpcServer *grpc.Server, healthServer *health.Server) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	<-c
+	healthServer.SetServingStatus(g.name, grpc_health_v1.HealthCheckResponse_NOT_SERVING)
+
 	g.logger.Info("Shutting down server...")
 	grpcServer.GracefulStop()
 	g.logger.Info("Server gracefully stopped")

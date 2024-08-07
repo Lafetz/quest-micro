@@ -25,7 +25,7 @@ func main() {
 		log.Error(err.Error())
 		os.Exit(1)
 	}
-	log.Info("connected to DB...")
+	log.Info("connected to DB")
 	store, err := repository.NewStore(mongo)
 	if err != nil {
 		log.Error(err.Error())
