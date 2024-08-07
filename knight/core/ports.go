@@ -11,6 +11,8 @@ type KnightServiceApi interface {
 }
 type KnightRepository interface {
 	GetKnight(context.Context, string) (*Knight, error)
+	GetKnights(ctx context.Context) ([]*Knight, error)
 	AddKnight(context.Context, *Knight) (*Knight, error)
 	UpdateStatus(context.Context, string, bool) error
+	DeleteKnight(context.Context, string) error
 }

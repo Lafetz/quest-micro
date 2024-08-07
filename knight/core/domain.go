@@ -6,18 +6,16 @@ import (
 
 type Knight struct {
 	Id       uuid.UUID
-	Username string
+	Name     string
 	Email    string
-	Password []byte
 	IsActive bool
 }
 
-func NewKnight(username string, email string, password []byte) *Knight {
+func NewKnight(Name string, email string) *Knight {
 	user := &Knight{
 		Id:       uuid.New(),
-		Username: username,
+		Name:     Name,
 		Email:    email,
-		Password: password,
 		IsActive: true,
 	}
 

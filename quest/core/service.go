@@ -19,7 +19,7 @@ type QuestService struct {
 
 func (srv *QuestService) AddQuest(ctx context.Context, quest Quest) (*Quest, error) {
 
-	canAccept, err := srv.KntSrv.GetKnightStatus(quest.KntUsername)
+	canAccept, err := srv.KntSrv.GetKnightStatus(ctx, quest.KntUsername)
 	if err != nil {
 		return nil, err
 	}

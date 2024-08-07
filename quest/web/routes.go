@@ -16,7 +16,7 @@ func (a *App) initAppRoutes() {
 
 	a.gin.GET("/quest/:questId", a.getQuest)
 	a.gin.GET("/quest", a.getAssignedQuests)
-	a.gin.PUT("/quest", a.completeQuest)
+	a.gin.PUT("/quest/:questId", a.completeQuest)
 	a.gin.POST("/quest", a.addQuest)
 	a.gin.GET("/metrics", prometheusHandler())
 }

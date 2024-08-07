@@ -2,7 +2,7 @@ package web
 
 import (
 	"github.com/google/uuid"
-	quest "github.com/lafetz/quest-demo/quest/core"
+	quest "github.com/lafetz/quest-micro/quest/core"
 )
 
 type Quest struct {

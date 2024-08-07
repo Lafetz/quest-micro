@@ -19,5 +19,5 @@ type QuestRepository interface {
 	GetQuest(context.Context, uuid.UUID) (*Quest, error)
 }
 type KnightService interface {
-	GetKnightStatus(string) (bool, error)
+	GetKnightStatus(context.Context, string) (bool, error)
 }

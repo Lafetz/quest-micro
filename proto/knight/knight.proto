@@ -3,26 +3,36 @@ package protoknight;
 
 option go_package = "github.com/lafetz/quest-demo/knight/protoknight";
 message AddKnightReq {
-  string username = 1;
+  string name = 1;
   string email = 2;
-  string password = 3;
 }
 
 message AddKnightRes {
   string id = 1;
-  string username = 2;
+  string name = 2;
   string email = 3;
   bool is_active = 5;
 }
 message KnightStatusReq {
-  string username = 1;
+  string name = 1;
 }
 message KnightStatusRes {
   bool is_active = 1;
 }
 message UpdateStatusReq {
   bool active = 1;
-  string username = 2;
+  string name = 2;
+}
+message GetKnightsReq {}
+message Knight {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  bool is_active = 4;
+}
+
+message GetKnightsRes {
+  repeated Knight knights = 1;
 }
 message UpdateStatusRes {}
 
@@ -30,4 +40,5 @@ service KnightService {
   rpc AddKnight(AddKnightReq) returns (AddKnightRes);
   rpc GetKnightStatus(KnightStatusReq) returns (KnightStatusRes);
   rpc UpdateStatus(UpdateStatusReq) returns (UpdateStatusRes);
+  rpc GetKnights(GetKnightsReq) returns (UpdateStatusRes);
 }

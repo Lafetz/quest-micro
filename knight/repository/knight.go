@@ -6,17 +6,16 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	commonerrors "github.com/lafetz/quest-demo/common/errors"
-	knight "github.com/lafetz/quest-demo/knight/core"
+	commonerrors "github.com/lafetz/quest-micro/common/errors"
+	knight "github.com/lafetz/quest-micro/knight/core"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type knightMongo struct {
 	Id       uuid.UUID `bson:"_id,omitempty"`
-	Username string    `bson:"username" unique:"true"`
+	Name     string    `bson:"name"`
 	Email    string    `bson:"email" unique:"true"`
-	Password []byte    `bson:"password"`
 	IsActive bool      `bson:"isActive"`
 }
 
@@ -24,9 +23,8 @@ type knightMongo struct {
 func (u *knightMongo) domain() *knight.Knight {
 	return &knight.Knight{
 		Id:       u.Id,
-		Username: u.Username,
+		Name:     u.Name,
 		Email:    u.Email,
-		Password: u.Password,
 		IsActive: u.IsActive,
 	}
 }
@@ -34,9 +32,8 @@ func (u *knightMongo) domain() *knight.Knight {
 func newUserMongo(u *knight.Knight) *knightMongo {
 	return &knightMongo{
 		Id:       u.Id,
-		Username: u.Username,
+		Name:     u.Name,
 		Email:    u.Email,
-		Password: u.Password,
 		IsActive: u.IsActive,
 	}
 }
@@ -54,8 +51,7 @@ func (store *Store) AddKnight(ctx context.Context, knightData *knight.Knight) (*
 					switch key {
 					case "email":
 						return nil, knight.ErrEmailUnique
-					case "username":
-						return nil, knight.ErrUsernameUnique
+
 					default:
 						return nil, err
 
@@ -81,6 +77,33 @@ func (store *Store) GetKnight(ctx context.Context, username string) (*knight.Kni
 
 	return knightData.domain(), nil
 }
+func (store *Store) GetKnights(ctx context.Context) ([]*knight.Knight, error) {
+	var knightsMongo []knightMongo
+	cursor, err := store.knights.Find(ctx, bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var knightData knightMongo
+		if err := cursor.Decode(&knightData); err != nil {
+			return nil, err
+		}
+		knightsMongo = append(knightsMongo, knightData)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	var knights []*knight.Knight
+	for _, knightMongo := range knightsMongo {
+		knights = append(knights, knightMongo.domain())
+	}
+
+	return knights, nil
+}
 
 func (store *Store) UpdateStatus(ctx context.Context, username string, active bool) error {
 	filter := bson.D{{Key: "username", Value: username}}
@@ -97,6 +120,20 @@ func (store *Store) UpdateStatus(ctx context.Context, username string, active bo
 	return nil
 }
 
+func (store *Store) DeleteKnight(ctx context.Context, username string) error {
+	filter := bson.D{{Key: "username", Value: username}}
+
+	result, err := store.knights.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+
+	if result.DeletedCount == 0 {
+		return commonerrors.ErrKnightNotFound
+	}
+
+	return nil
+}
 func extractDuplicateKey(errorMessage string) string {
 
 	pattern := `index: ([a-zA-Z0-9_]+)_\d+ dup key`

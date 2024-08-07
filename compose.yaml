@@ -1,7 +1,7 @@
-version: '3.9'
+version: "3.9"
 services:
   knight:
-    build: 
+    build:
       context: ./.
       dockerfile: Dockerfile.knight
     container_name: knight
@@ -13,19 +13,19 @@ services:
       - DB_URL=mongodb://admin:admin11@mongo/knight?authSource=admin
       - ENV=dev
       - PORT=8080
-  quest:
-    build: 
-      context: ./.
-      dockerfile: Dockerfile.quest
-    container_name: quest
-    depends_on:
-      - postgres
-    ports:
-      - 4000:4000
-    environment:
-      - DB_URL=postgresql://user:password@postgres/quest?sslmode=disable
-      - ENV=dev
-      - PORT=4000
+  # # quest:
+  #   build:
+  #     context: ./.
+  #     dockerfile: Dockerfile.quest
+  #   container_name: quest
+  #   depends_on:
+  #     - postgres
+  #   ports:
+  #     - 4000:4000
+  #   environment:
+  #     - DB_URL=postgresql://user:password@postgres/quest?sslmode=disable
+  #     - ENV=dev
+  #     - PORT=4000
   postgres:
     image: postgres:14-alpine
     ports:
@@ -35,9 +35,10 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_DB=quest
   mongo:
-    image: 'mongo:7.0.5'
+    image: "mongo:7.0.5"
+    ports:
+      - 27017:27017
     environment:
       - MONGO_INITDB_DATABASE=knight
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin11
-

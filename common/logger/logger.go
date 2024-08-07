@@ -7,7 +7,7 @@ import (
 
 var LogLevels = map[string]slog.Level{
 	"dev":  slog.LevelDebug,
-	"prod": slog.LevelWarn,
+	"prod": slog.LevelInfo,
 }
 
 func NewLogger(env string) *slog.Logger {

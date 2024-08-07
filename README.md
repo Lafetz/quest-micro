@@ -1,6 +1,6 @@
-# QUEST DEMO
+# QUEST MICRO
 
-Simplistic go microservice, organized in a monorepo structure.
+Simplistic go microservice, organized in a monorepo structure. It's not meant to be useful but just to show how microservices can talk to each other using different technologies.
 
 ## Tech Stack
 

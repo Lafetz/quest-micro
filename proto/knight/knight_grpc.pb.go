@@ -22,6 +22,7 @@ const (
 	KnightService_AddKnight_FullMethodName       = "/protoknight.KnightService/AddKnight"
 	KnightService_GetKnightStatus_FullMethodName = "/protoknight.KnightService/GetKnightStatus"
 	KnightService_UpdateStatus_FullMethodName    = "/protoknight.KnightService/UpdateStatus"
+	KnightService_GetKnights_FullMethodName      = "/protoknight.KnightService/GetKnights"
 )
 
 // KnightServiceClient is the client API for KnightService service.
@@ -31,6 +32,7 @@ type KnightServiceClient interface {
 	AddKnight(ctx context.Context, in *AddKnightReq, opts ...grpc.CallOption) (*AddKnightRes, error)
 	GetKnightStatus(ctx context.Context, in *KnightStatusReq, opts ...grpc.CallOption) (*KnightStatusRes, error)
 	UpdateStatus(ctx context.Context, in *UpdateStatusReq, opts ...grpc.CallOption) (*UpdateStatusRes, error)
+	GetKnights(ctx context.Context, in *GetKnightsReq, opts ...grpc.CallOption) (*UpdateStatusRes, error)
 }
 
 type knightServiceClient struct {
@@ -68,6 +70,15 @@ func (c *knightServiceClient) UpdateStatus(ctx context.Context, in *UpdateStatus
 	return out, nil
 }
 
+func (c *knightServiceClient) GetKnights(ctx context.Context, in *GetKnightsReq, opts ...grpc.CallOption) (*UpdateStatusRes, error) {
+	out := new(UpdateStatusRes)
+	err := c.cc.Invoke(ctx, KnightService_GetKnights_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // KnightServiceServer is the server API for KnightService service.
 // All implementations must embed UnimplementedKnightServiceServer
 // for forward compatibility
@@ -75,6 +86,7 @@ type KnightServiceServer interface {
 	AddKnight(context.Context, *AddKnightReq) (*AddKnightRes, error)
 	GetKnightStatus(context.Context, *KnightStatusReq) (*KnightStatusRes, error)
 	UpdateStatus(context.Context, *UpdateStatusReq) (*UpdateStatusRes, error)
+	GetKnights(context.Context, *GetKnightsReq) (*UpdateStatusRes, error)
 	mustEmbedUnimplementedKnightServiceServer()
 }
 
@@ -90,6 +102,9 @@ func (UnimplementedKnightServiceServer) GetKnightStatus(context.Context, *Knight
 }
 func (UnimplementedKnightServiceServer) UpdateStatus(context.Context, *UpdateStatusReq) (*UpdateStatusRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateStatus not implemented")
+}
+func (UnimplementedKnightServiceServer) GetKnights(context.Context, *GetKnightsReq) (*UpdateStatusRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetKnights not implemented")
 }
 func (UnimplementedKnightServiceServer) mustEmbedUnimplementedKnightServiceServer() {}
 
@@ -158,6 +173,24 @@ func _KnightService_UpdateStatus_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _KnightService_GetKnights_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetKnightsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KnightServiceServer).GetKnights(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KnightService_GetKnights_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KnightServiceServer).GetKnights(ctx, req.(*GetKnightsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // KnightService_ServiceDesc is the grpc.ServiceDesc for KnightService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +209,10 @@ var KnightService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateStatus",
 			Handler:    _KnightService_UpdateStatus_Handler,
+		},
+		{
+			MethodName: "GetKnights",
+			Handler:    _KnightService_GetKnights_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

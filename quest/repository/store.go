@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/lafetz/quest-demo/quest/repository/gen"
+	"github.com/lafetz/quest-micro/quest/repository/gen"
 	_ "github.com/lib/pq"
 )
 
