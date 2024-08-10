@@ -26,13 +26,14 @@ func (app *App) addQuest(c *gin.Context) {
 
 		if ok {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"Errors": ValidateModel(err),
+				"error":   "There was a problem with the provided data",
+				"details": ValidateModel(err),
 			})
 			return
 
 		}
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Error": "Error processing request body",
+			"error": "Error processing request body",
 		})
 		return
 	}
@@ -43,19 +44,19 @@ func (app *App) addQuest(c *gin.Context) {
 	if err != nil {
 		if errors.Is(err, quest.ErrKntUnavailable) {
 			c.JSON(http.StatusNotFound, gin.H{
-				"Error": err.Error(),
+				"error": err.Error(),
 			})
 			return
 		}
 		if errors.Is(err, commonerrors.ErrKnightNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{
-				"Error": err.Error(),
+				"error": err.Error(),
 			})
 			return
 		}
 		app.logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Error": "internal server Error",
+			"error": "internal server Error",
 		})
 		return
 	}
@@ -79,7 +80,7 @@ func (app *App) getAssignedQuests(c *gin.Context) {
 	if err != nil {
 		app.logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Error": "internal server Error",
+			"error": "internal server Error",
 		})
 		return
 	}
@@ -93,7 +94,7 @@ func (app *App) completeQuest(c *gin.Context) {
 	id, err := uuid.Parse(questId)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"Error": "quest not found",
+			"error": "quest not found",
 		})
 		return
 	}
@@ -101,13 +102,13 @@ func (app *App) completeQuest(c *gin.Context) {
 	if err != nil {
 		if errors.Is(err, quest.ErrNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{
-				"Error": err.Error(),
+				"error": err.Error(),
 			})
 			return
 		}
 		app.logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Error": "internal server Error",
+			"error": "internal server Error",
 		})
 		return
 	}
@@ -120,7 +121,7 @@ func (app *App) getQuest(c *gin.Context) {
 	id, err := uuid.Parse(questId)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"Error": "quest not found",
+			"error": "quest not found",
 		})
 		return
 	}
@@ -128,13 +129,13 @@ func (app *App) getQuest(c *gin.Context) {
 	if err != nil {
 		if errors.Is(err, quest.ErrNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{
-				"Error": err.Error(),
+				"error": err.Error(),
 			})
 			return
 		}
 		app.logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Error": "internal server Error",
+			"error": "internal server Error",
 		})
 		return
 	}

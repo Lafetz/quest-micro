@@ -1,0 +1,29 @@
+# https://grafana.com/docs/loki/latest/clients/promtail/configuration/
+# https://docs.docker.com/engine/api/v1.41/#operation/ContainerList
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: flog_scrape
+    docker_sd_configs: #docker service discovery 
+      - host: unix:///var/run/docker.sock #where the docker daemon is 
+        refresh_interval: 5s #how often Promtail should refresh its list of running containers.
+        filters: #Docker containers Promtail will discover 
+          - name: label #This indicates that Promtail will filter containers based on their labels.
+            values: ["logging=promtail"]
+   
+    relabel_configs: #This section is used to dynamically change labels on the log data before it is sent to Loki.
+      - source_labels: ['__meta_docker_container_name'] #specifies that the source label __meta_docker_container_name (the name of the Docker container) should be used in the relabeling process.
+        regex: '/(.*)'
+        target_label: 'container'
+      - source_labels: ['__meta_docker_container_log_stream'] #stdout or stderr
+        target_label: 'logstream'
+      - source_labels: ['__meta_docker_container_label_logging_jobname']
+        target_label: 'job'

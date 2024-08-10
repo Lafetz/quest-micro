@@ -36,13 +36,13 @@ func validateAddknight(email string, name string) []*errdetails.BadRequest_Field
 
 	return validationErrors
 }
-func validateGet(name string) []*errdetails.BadRequest_FieldViolation {
+func validateGet(email string) []*errdetails.BadRequest_FieldViolation {
 	var validationErrors []*errdetails.BadRequest_FieldViolation
-	if strings.TrimSpace(name) == "" {
+	if strings.TrimSpace(email) == "" {
 		validationErrors = append(validationErrors,
 			&errdetails.BadRequest_FieldViolation{
-				Field:       "name",
-				Description: "name is required",
+				Field:       "email",
+				Description: "email is required",
 			})
 
 	}

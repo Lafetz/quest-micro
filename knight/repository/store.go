@@ -43,10 +43,6 @@ func NewStore(client *mongo.Client) (*Store, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = createUniqueIndex(context.Background(), knights, "username")
-	if err != nil {
-		return nil, err
-	}
 
 	return &Store{
 		knights: knights,

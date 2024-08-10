@@ -6,7 +6,7 @@ import (
 
 	commonerrors "github.com/lafetz/quest-micro/common/errors"
 	knight "github.com/lafetz/quest-micro/knight/core"
-	protoknight "github.com/lafetz/quest-micro/proto/knight"
+	protoknight "github.com/lafetz/quest-micro/proto/gen"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,7 +19,7 @@ func (g *GrpcServer) AddKnight(ctx context.Context, req *protoknight.AddKnightRe
 	}
 	validationErrors := validateAddknight(req.Email, req.Name)
 	if len(validationErrors) > 0 {
-		stat := status.New(codes.InvalidArgument, "invalid knight request")
+		stat := status.New(codes.InvalidArgument, "There was a problem with the provided data")
 		badRequest := &errdetails.BadRequest{}
 		badRequest.FieldViolations = validationErrors
 		s, _ := stat.WithDetails(badRequest)
@@ -49,6 +49,7 @@ func (g *GrpcServer) GetKnightStatus(ctx context.Context, req *protoknight.Knigh
 		badRequest.FieldViolations = validationErrors
 		s, _ := stat.WithDetails(badRequest)
 		return nil, s.Err()
+
 	}
 	isActive, err := g.knightService.KnightStatus(ctx, req.Email)
 	if err != nil && errors.Is(err, commonerrors.ErrKnightNotFound) {

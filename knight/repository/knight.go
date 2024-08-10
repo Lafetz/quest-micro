@@ -29,7 +29,7 @@ func (u *knightMongo) domain() *knight.Knight {
 	}
 }
 
-func newUserMongo(u *knight.Knight) *knightMongo {
+func newKnightMongo(u *knight.Knight) *knightMongo {
 	return &knightMongo{
 		Id:       u.Id,
 		Name:     u.Name,
@@ -39,8 +39,8 @@ func newUserMongo(u *knight.Knight) *knightMongo {
 }
 
 func (store *Store) AddKnight(ctx context.Context, knightData *knight.Knight) (*knight.Knight, error) {
-	u := newUserMongo(knightData)
-	_, err := store.knights.InsertOne(ctx, u)
+	k := newKnightMongo(knightData)
+	_, err := store.knights.InsertOne(ctx, k)
 	if err != nil {
 		if mongoErr, ok := err.(mongo.WriteException); ok {
 
@@ -48,6 +48,7 @@ func (store *Store) AddKnight(ctx context.Context, knightData *knight.Knight) (*
 				if writeErr.Code == 11000 {
 
 					key := extractDuplicateKey(writeErr.Message)
+
 					switch key {
 					case "email":
 						return nil, knight.ErrEmailUnique
@@ -65,9 +66,9 @@ func (store *Store) AddKnight(ctx context.Context, knightData *knight.Knight) (*
 	}
 	return knightData, nil
 }
-func (store *Store) GetKnight(ctx context.Context, username string) (*knight.Knight, error) {
+func (store *Store) GetKnight(ctx context.Context, email string) (*knight.Knight, error) {
 	var knightData knightMongo
-	err := store.knights.FindOne(ctx, bson.D{{Key: "username", Value: username}}).Decode(&knightData)
+	err := store.knights.FindOne(ctx, bson.D{{Key: "email", Value: email}}).Decode(&knightData)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, commonerrors.ErrKnightNotFound
@@ -105,8 +106,8 @@ func (store *Store) GetKnights(ctx context.Context) ([]*knight.Knight, error) {
 	return knights, nil
 }
 
-func (store *Store) UpdateStatus(ctx context.Context, username string, active bool) error {
-	filter := bson.D{{Key: "username", Value: username}}
+func (store *Store) UpdateStatus(ctx context.Context, email string, active bool) error {
+	filter := bson.D{{Key: "email", Value: email}}
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "isActive", Value: active}}}}
 
 	var knightData knightMongo
@@ -120,8 +121,8 @@ func (store *Store) UpdateStatus(ctx context.Context, username string, active bo
 	return nil
 }
 
-func (store *Store) DeleteKnight(ctx context.Context, username string) error {
-	filter := bson.D{{Key: "username", Value: username}}
+func (store *Store) DeleteKnight(ctx context.Context, email string) error {
+	filter := bson.D{{Key: "email", Value: email}}
 
 	result, err := store.knights.DeleteOne(ctx, filter)
 	if err != nil {

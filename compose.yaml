@@ -1,4 +1,5 @@
 version: "3.9"
+
 services:
   knight:
     build:
@@ -7,12 +8,22 @@ services:
     container_name: knight
     depends_on:
       - mongo
+      - promtail
     ports:
       - 8080:8080
     environment:
       - DB_URL=mongodb://admin:admin11@mongo/knight?authSource=admin
-      - ENV=dev
+      - ENV=prod
       - PORT=8080
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    networks:
+      - app
+  #   labels:
+  #     logging: "promtail"
+  #     logging_jobname: "containerlogs"
+  #   logging: *default-logging
   # # quest:
   #   build:
   #     context: ./.
@@ -26,14 +37,14 @@ services:
   #     - DB_URL=postgresql://user:password@postgres/quest?sslmode=disable
   #     - ENV=dev
   #     - PORT=4000
-  postgres:
-    image: postgres:14-alpine
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_USER=user
-      - POSTGRES_DB=quest
+  # postgres:
+  #   image: postgres:14-alpine
+  #   ports:
+  #     - 5432:5432
+  #   environment:
+  #     - POSTGRES_PASSWORD=password
+  #     - POSTGRES_USER=user
+  #     - POSTGRES_DB=quest
   mongo:
     image: "mongo:7.0.5"
     ports:
@@ -42,3 +53,51 @@ services:
       - MONGO_INITDB_DATABASE=knight
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin11
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    depends_on:
+      - grafana
+    networks:
+      - app
+
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: loki
+    ports:
+      - 3100:3100
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - app
+
+  promtail:
+    image: grafana/promtail:2.9.2
+    container_name: promtail
+    volumes:
+      - ./deployments/promtail.yaml:/etc/promtail/docker-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/docker-config.yaml
+    depends_on:
+      - loki
+      - grafana
+    networks:
+      - app
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    volumes:
+      - ./deployments/grafana.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    ports:
+      - "3000:3000"
+    networks:
+      - app
+
+networks:
+  app:
+    name: app

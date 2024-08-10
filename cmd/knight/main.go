@@ -7,8 +7,8 @@ import (
 	"github.com/lafetz/quest-micro/common/logger"
 	configKnt "github.com/lafetz/quest-micro/knight/config"
 	knight "github.com/lafetz/quest-micro/knight/core"
-	grpcserver "github.com/lafetz/quest-micro/knight/grpc"
 	"github.com/lafetz/quest-micro/knight/repository"
+	grpcserver "github.com/lafetz/quest-micro/knight/server"
 )
 
 func main() {
@@ -22,6 +22,7 @@ func main() {
 	mongo, close, err := repository.NewDb(config.DbUrl, log)
 	defer close()
 	if err != nil {
+
 		log.Error(err.Error())
 		os.Exit(1)
 	}
@@ -35,6 +36,7 @@ func main() {
 	srv := knight.NewKnightService(store)
 
 	grpc := grpcserver.NewGrpcServer(srv, config.Port, log)
+	log.Info("Server starting")
 	grpc.Run()
 
 }

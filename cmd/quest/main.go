@@ -9,7 +9,7 @@ import (
 	quest "github.com/lafetz/quest-micro/quest/core"
 	client "github.com/lafetz/quest-micro/quest/knight_grpc"
 	"github.com/lafetz/quest-micro/quest/repository"
-	"github.com/lafetz/quest-micro/quest/web"
+	web "github.com/lafetz/quest-micro/quest/server"
 )
 
 type MockKnightSrv struct{}
@@ -32,7 +32,7 @@ func main() {
 	log.Info("connected to DB...")
 	store := repository.NewDb(db)
 
-	grpcClient, err := client.NewGRPCClient("localhost:8080")
+	grpcClient, err := client.NewKnightClient("localhost:8080")
 	if err != nil {
 		log.Error(err.Error())
 		os.Exit(1)

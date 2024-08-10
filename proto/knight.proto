@@ -1,6 +1,7 @@
 syntax = "proto3";
 package protoknight;
-
+import "google/api/annotations.proto";
+import "google/rpc/error_details.proto";
 option go_package = "github.com/lafetz/quest-demo/knight/protoknight";
 message AddKnightReq {
   string name = 1;
@@ -14,14 +15,14 @@ message AddKnightRes {
   bool is_active = 5;
 }
 message KnightStatusReq {
-  string name = 1;
+  string email = 1;
 }
 message KnightStatusRes {
   bool is_active = 1;
 }
 message UpdateStatusReq {
   bool active = 1;
-  string name = 2;
+  string email = 2;
 }
 message GetKnightsReq {}
 message Knight {
@@ -36,9 +37,29 @@ message GetKnightsRes {
 }
 message UpdateStatusRes {}
 
+message GetKnightReq {
+  string email = 1;
+}
+
+message GetKnightRes {
+  Knight knight = 1;
+}
+message DeleteKnightReq {
+  string email = 1;
+}
+message DeleteKnightRes {}
+
 service KnightService {
-  rpc AddKnight(AddKnightReq) returns (AddKnightRes);
+  rpc AddKnight(AddKnightReq) returns (AddKnightRes) {
+    option (google.api.http) = {
+      post: "/v1/knight"
+      body: "*"
+    };
+  }
+
   rpc GetKnightStatus(KnightStatusReq) returns (KnightStatusRes);
   rpc UpdateStatus(UpdateStatusReq) returns (UpdateStatusRes);
-  rpc GetKnights(GetKnightsReq) returns (UpdateStatusRes);
+  rpc GetKnights(GetKnightsReq) returns (GetKnightsRes);
+  rpc GetKnight(GetKnightReq) returns (GetKnightRes);
+  rpc DeleteKnight(DeleteKnightReq) returns (DeleteKnightRes);
 }

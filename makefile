@@ -7,10 +7,7 @@ db/migrations/up:
 	@echo 'Running up migrations...'
 	migrate -path ./db/migrations -database postgresql://user:password@localhost:5432/quest?sslmode=disable up
 
-proto-knight:
-	protoc --go_out=. --go_opt=paths=source_relative \
-  	  --go-grpc_out=. --go-grpc_opt paths=source_relative \
-	  proto/knight/knight.proto
+
 run-knight:
 	@echo "Loading environment variables from .env file"
 	@set -o allexport; source ./load_env.sh; set +o allexport; \

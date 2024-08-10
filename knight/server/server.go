@@ -11,10 +11,11 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	commongrpc "github.com/lafetz/quest-micro/common/grpc"
 	knight "github.com/lafetz/quest-micro/knight/core"
-	protoknight "github.com/lafetz/quest-micro/proto/knight"
+	protoknight "github.com/lafetz/quest-micro/proto/gen"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/reflection"
 )
 
 type GrpcServer struct {
@@ -38,8 +39,12 @@ func (g *GrpcServer) Run() {
 		recovery.UnaryServerInterceptor(recovery.WithRecoveryHandler(grpcPanicRecoveryHandler)),
 	))
 	protoknight.RegisterKnightServiceServer(grpcServer, g)
+
+	reflection.Register(grpcServer)
+
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
+
 	go func() {
 		healthServer.SetServingStatus(g.name, grpc_health_v1.HealthCheckResponse_SERVING)
 		if err := grpcServer.Serve(lis); err != nil {

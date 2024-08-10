@@ -6,7 +6,7 @@ import (
 	"time"
 
 	commonerrors "github.com/lafetz/quest-micro/common/errors"
-	protoknight "github.com/lafetz/quest-micro/proto/knight"
+	protoknight "github.com/lafetz/quest-micro/proto/gen"
 	"github.com/sony/gobreaker"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -18,9 +18,9 @@ type KnightServiceClient struct {
 	cb     *gobreaker.CircuitBreaker
 }
 
-func (k *KnightServiceClient) GetKnightStatus(ctx context.Context, name string) (bool, error) {
+func (k *KnightServiceClient) GetKnightStatus(ctx context.Context, email string) (bool, error) {
 
-	req := &protoknight.KnightStatusReq{Name: name}
+	req := &protoknight.KnightStatusReq{Email: email}
 	res, err := k.cb.Execute(func() (interface{}, error) {
 		return k.client.GetKnightStatus(ctx, req)
 	})

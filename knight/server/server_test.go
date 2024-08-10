@@ -12,7 +12,7 @@ import (
 	"github.com/lafetz/quest-micro/common/logger"
 	knight "github.com/lafetz/quest-micro/knight/core"
 	"github.com/lafetz/quest-micro/knight/repository"
-	protoknight "github.com/lafetz/quest-micro/proto/knight"
+	protoknight "github.com/lafetz/quest-micro/proto/gen"
 	"github.com/testcontainers/testcontainers-go/modules/mongodb"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
