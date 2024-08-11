@@ -1,15 +1,15 @@
-package grpcserver
+package knightserver
 
 import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/lafetz/quest-micro/common/logger"
 	knight "github.com/lafetz/quest-micro/knight/core"
 	"github.com/lafetz/quest-micro/knight/repository"
 	protoknight "github.com/lafetz/quest-micro/proto/gen"
@@ -23,6 +23,23 @@ import (
 
 var mongoC *mongo.Client
 var cleanupFunc func()
+
+type registry struct{}
+
+func (r *registry) Register(instanceID string, serviceName string, hostPort string) error {
+	return nil
+}
+func (r *registry) Deregister(instanceID string, serviceName string) error {
+	return nil
+}
+
+func (r *registry) ServiceAddresses(serviceID string) ([]string, error) {
+	return []string{}, nil
+}
+
+func (r *registry) ReportHealthyState(instanceID string) error {
+	return nil
+}
 
 func TestMain(m *testing.M) {
 	ctx := context.Background()
@@ -41,8 +58,8 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed to get mapped port: %s", err)
 	}
 	uri := fmt.Sprintf("mongodb://%s:%s", ip, mappedPort.Port())
-	logger := logger.NewLogger("dev")
-	mongo, close, err := repository.NewDb(uri, logger)
+
+	mongo, close, err := repository.NewDb(uri, slog.Default())
 	if err != nil {
 		log.Fatalf("failed to connect to MongoDB: %s", err)
 	}
@@ -107,8 +124,7 @@ func TestAddKnight(t *testing.T) {
 	t.Cleanup(func() {
 		lis.Close()
 	})
-
-	grpcServer := NewGrpcServer(svc, 8080, logger.NewLogger("dev"))
+	grpcServer := NewKnightServer("knight", "zxc", &registry{}, svc, 8080, slog.Default())
 
 	conn := newServer(t, func(srv *grpc.Server) {
 		protoknight.RegisterKnightServiceServer(srv, grpcServer)
@@ -145,7 +161,7 @@ func TestAddKnight(t *testing.T) {
 			},
 			expected: expectation{
 				out: nil,
-				err: status.Error(codes.InvalidArgument, "invalid knight request"),
+				err: status.Error(codes.InvalidArgument, ErrValidate.Error()),
 			},
 		},
 		"Empty Name": {
@@ -155,7 +171,7 @@ func TestAddKnight(t *testing.T) {
 			},
 			expected: expectation{
 				out: nil,
-				err: status.Error(codes.InvalidArgument, "invalid knight request"),
+				err: status.Error(codes.InvalidArgument, ErrValidate.Error()),
 			},
 		},
 		"Empty Email": {
@@ -165,7 +181,7 @@ func TestAddKnight(t *testing.T) {
 			},
 			expected: expectation{
 				out: nil,
-				err: status.Error(codes.InvalidArgument, "invalid knight request"),
+				err: status.Error(codes.InvalidArgument, ErrValidate.Error()),
 			},
 		},
 		"Duplicate Email": {

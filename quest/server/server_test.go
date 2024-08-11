@@ -1,4 +1,4 @@
-package web
+package questserver
 
 import (
 	"bytes"

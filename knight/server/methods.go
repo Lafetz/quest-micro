@@ -1,4 +1,4 @@
-package grpcserver
+package knightserver
 
 import (
 	"context"
@@ -12,20 +12,23 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (g *GrpcServer) AddKnight(ctx context.Context, req *protoknight.AddKnightReq) (*protoknight.AddKnightRes, error) {
+var (
+	ErrValidate = errors.New("there was a problem with the provided data")
+)
+
+func (g *KnightServer) AddKnight(ctx context.Context, req *protoknight.AddKnightReq) (*protoknight.AddKnightRes, error) {
 
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "nil req ")
 	}
 	validationErrors := validateAddknight(req.Email, req.Name)
 	if len(validationErrors) > 0 {
-		stat := status.New(codes.InvalidArgument, "There was a problem with the provided data")
+		stat := status.New(codes.InvalidArgument, ErrValidate.Error())
 		badRequest := &errdetails.BadRequest{}
 		badRequest.FieldViolations = validationErrors
 		s, _ := stat.WithDetails(badRequest)
 		return nil, s.Err()
 	}
-
 	knt := knight.NewKnight(req.Name, req.Email)
 	kntR, err := g.knightService.AddKnight(ctx, knt)
 	if err != nil {
@@ -38,13 +41,13 @@ func (g *GrpcServer) AddKnight(ctx context.Context, req *protoknight.AddKnightRe
 	return &protoknight.AddKnightRes{Id: kntR.Id.String(), Name: kntR.Name, Email: kntR.Email, IsActive: kntR.IsActive}, nil
 }
 
-func (g *GrpcServer) GetKnightStatus(ctx context.Context, req *protoknight.KnightStatusReq) (*protoknight.KnightStatusRes, error) {
+func (g *KnightServer) GetKnightStatus(ctx context.Context, req *protoknight.KnightStatusReq) (*protoknight.KnightStatusRes, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "nil req ")
 	}
 	validationErrors := validateGet(req.Email)
 	if len(validationErrors) > 0 {
-		stat := status.New(codes.InvalidArgument, "invalid knight request")
+		stat := status.New(codes.InvalidArgument, ErrValidate.Error())
 		badRequest := &errdetails.BadRequest{}
 		badRequest.FieldViolations = validationErrors
 		s, _ := stat.WithDetails(badRequest)
@@ -65,9 +68,9 @@ func (g *GrpcServer) GetKnightStatus(ctx context.Context, req *protoknight.Knigh
 	return &protoknight.KnightStatusRes{IsActive: isActive}, nil
 }
 
-func (g *GrpcServer) UpdateStatus(ctx context.Context, req *protoknight.UpdateStatusReq) (*protoknight.UpdateStatusRes, error) {
+func (g *KnightServer) UpdateStatus(ctx context.Context, req *protoknight.UpdateStatusReq) (*protoknight.UpdateStatusRes, error) {
 	if req == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "nil req ")
+		return nil, status.Errorf(codes.InvalidArgument, "nil req")
 	}
 	err := g.knightService.UpdateStatus(ctx, req.Email, req.Active)
 	if err != nil && errors.Is(err, commonerrors.ErrKnightNotFound) {
@@ -81,7 +84,7 @@ func (g *GrpcServer) UpdateStatus(ctx context.Context, req *protoknight.UpdateSt
 	}
 	return &protoknight.UpdateStatusRes{}, nil
 }
-func (g *GrpcServer) GetKnights(ctx context.Context, req *protoknight.GetKnightsReq) (*protoknight.GetKnightsRes, error) {
+func (g *KnightServer) GetKnights(ctx context.Context, req *protoknight.GetKnightsReq) (*protoknight.GetKnightsRes, error) {
 	knights, err := g.knightService.GetKnights(ctx)
 	if err != nil {
 		g.logger.Error(err.Error())
@@ -101,7 +104,7 @@ func (g *GrpcServer) GetKnights(ctx context.Context, req *protoknight.GetKnights
 		Knights: responseKnights,
 	}, nil
 }
-func (g *GrpcServer) GetKnight(ctx context.Context, req *protoknight.GetKnightReq) (*protoknight.GetKnightRes, error) {
+func (g *KnightServer) GetKnight(ctx context.Context, req *protoknight.GetKnightReq) (*protoknight.GetKnightRes, error) {
 	knight, err := g.knightService.GetKnight(ctx, req.GetEmail())
 	if err != nil && errors.Is(err, commonerrors.ErrKnightNotFound) {
 
@@ -122,7 +125,7 @@ func (g *GrpcServer) GetKnight(ctx context.Context, req *protoknight.GetKnightRe
 		},
 	}, nil
 }
-func (g *GrpcServer) DeleteKnight(ctx context.Context, req *protoknight.DeleteKnightReq) (*protoknight.DeleteKnightRes, error) {
+func (g *KnightServer) DeleteKnight(ctx context.Context, req *protoknight.DeleteKnightReq) (*protoknight.DeleteKnightRes, error) {
 	err := g.knightService.DeleteKnight(ctx, req.GetEmail())
 	if err != nil && errors.Is(err, commonerrors.ErrKnightNotFound) {
 

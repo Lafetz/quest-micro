@@ -5,27 +5,28 @@ import (
 	"os"
 )
 
-var LogLevels = map[string]slog.Level{
-	"dev":  slog.LevelDebug,
-	"prod": slog.LevelInfo,
-}
+func NewLogger(env string, lvl slog.Level, serviceName string, version string, instanceId string) *slog.Logger {
 
-func NewLogger(env string) *slog.Logger {
-	logLevel := LogLevels[env]
 	var logHandler slog.Handler
 	switch env {
 	case "dev":
 		logHandler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-			AddSource: true,
-			Level:     logLevel,
+			Level: lvl,
 		})
 	default:
 		logHandler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			//AddSource: true,
-			Level: logLevel,
+			Level: lvl,
 		})
 	}
 
-	logger := slog.New(logHandler)
+	logger := slog.New(logHandler).With(slog.Group(
+		"service_info",
+		slog.String("env", env),
+		slog.String("service_Name", serviceName),
+		slog.String("version", version),
+		slog.String("instanceId", instanceId),
+	),
+	)
+
 	return logger
 }

@@ -49,17 +49,21 @@ func HttpErrorHandler(ctx context.Context, mux *runtime.ServeMux, m runtime.Mars
 	}
 
 	// error handler
-
 	s, ok := status.FromError(err)
 	httpStatus := mapGRPCCodeToHTTPStatus(s.Code())
 
 	if !ok {
 		s = status.New(codes.Unknown, err.Error())
 	}
-
+	var errMsg string
+	if httpStatus >= 500 { // prevent returning port when there is connection error
+		errMsg = "internal server error"
+	} else {
+		errMsg = s.Message()
+	}
 	resp := StandardResp{
 		Details: s.Details(),
-		Error:   s.Message(),
+		Error:   errMsg,
 	}
 	bs, _ := json.Marshal(&resp)
 

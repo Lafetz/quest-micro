@@ -15,20 +15,21 @@ type Store struct {
 }
 
 func NewDb(url string, logger *slog.Logger) (*mongo.Client, func(), error) {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(url))
+
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(url))
 	if err != nil {
 		return nil, nil, err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	err = client.Ping(ctx, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 	return client, func() {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		err := client.Disconnect(ctx)
+
+		err := client.Disconnect(context.Background())
 		if err != nil {
 			logger.Error(err.Error())
 		}
@@ -37,9 +38,10 @@ func NewDb(url string, logger *slog.Logger) (*mongo.Client, func(), error) {
 }
 
 func NewStore(client *mongo.Client) (*Store, error) {
-
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 	knights := client.Database("knight").Collection("knights")
-	err := createUniqueIndex(context.Background(), knights, "email")
+	err := createUniqueIndex(ctx, knights, "email")
 	if err != nil {
 		return nil, err
 	}

@@ -4,7 +4,6 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/lafetz/quest-micro/common/logger"
 	configqst "github.com/lafetz/quest-micro/quest/config"
 	quest "github.com/lafetz/quest-micro/quest/core"
 	client "github.com/lafetz/quest-micro/quest/knight_grpc"
@@ -23,7 +22,7 @@ func main() {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
-	log := logger.NewLogger(config.Env)
+	log := slog.Default() //logger.NewLogger(config.Env, 0)
 	db, err := repository.OpenDB(config.DbUrl)
 	if err != nil {
 		log.Error(err.Error())

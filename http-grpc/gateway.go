@@ -2,8 +2,10 @@ package httpgrpc
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"runtime/debug"
 	"strconv"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -11,12 +13,27 @@ import (
 	"google.golang.org/grpc"
 )
 
-func withLogger(logger *slog.Logger, h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logger.Info("Run request", "http_method", r.Method, "http_url", r.URL)
+func recoverPanic(logger *slog.Logger, next http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
 
-		h.ServeHTTP(w, r)
-	})
+			if err := recover(); err != nil {
+				var errorMessage string
+				if e, ok := err.(error); ok {
+					errorMessage = e.Error()
+				} else {
+					errorMessage = fmt.Sprintf("unknown panic: %v", err)
+				}
+				logger.Error("recovered from panic",
+					"method", r.Method,
+					"url", r.URL.String(),
+					"error", errorMessage,
+					"stack_trace", string(debug.Stack()),
+				)
+			}
+		}()
+		next.ServeHTTP(w, r)
+	}
 }
 
 func NewGatewayServer(conn *grpc.ClientConn, port int, logger *slog.Logger) (*http.Server, error) {
@@ -24,6 +41,7 @@ func NewGatewayServer(conn *grpc.ClientConn, port int, logger *slog.Logger) (*ht
 
 		runtime.WithErrorHandler(HttpErrorHandler),
 	)
+
 	err := knightpb.RegisterKnightServiceHandler(context.Background(), gwmux, conn)
 	if err != nil {
 		return nil, err
@@ -31,6 +49,6 @@ func NewGatewayServer(conn *grpc.ClientConn, port int, logger *slog.Logger) (*ht
 
 	return &http.Server{
 		Addr:    ":" + strconv.Itoa(port),
-		Handler: withLogger(logger, gwmux),
+		Handler: recoverPanic(logger, gwmux),
 	}, nil
 }
