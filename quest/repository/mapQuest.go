@@ -38,7 +38,7 @@ func mapQuest(q gen.Quest) (*quest.Quest, error) {
 	return &quest.Quest{
 		ID:          q.ID,
 		Owner:       q.Owner,
-		KntUsername: q.KnightUsername,
+		Email:       q.Email,
 		Name:        q.Name,
 		Description: q.Description,
 		Status:      status,

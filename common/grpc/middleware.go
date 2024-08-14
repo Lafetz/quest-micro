@@ -18,6 +18,7 @@ func CircuitBreaker(cb *gobreaker.CircuitBreaker) grpc.UnaryClientInterceptor {
 			return nil, nil
 
 		})
+
 		return cbErr
 	}
 }

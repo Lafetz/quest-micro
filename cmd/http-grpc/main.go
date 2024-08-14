@@ -40,8 +40,8 @@ func main() {
 		log.Error("failed to get service address", "error", err.Error())
 		os.Exit(1)
 	}
-
-	conn, err := commongrpc.NewGRPCClient(addrs[0])
+	cb := commongrpc.NewCb("knightGrpc")
+	conn, err := commongrpc.NewGRPCClient(addrs[0], cb)
 	if err != nil {
 		log.Error("unable to make connection with grpc service", "error", err.Error())
 		os.Exit(1)

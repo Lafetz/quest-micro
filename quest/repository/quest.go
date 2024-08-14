@@ -12,7 +12,7 @@ import (
 
 func (store *Store) AddQuest(ctx context.Context, qst quest.Quest) (*quest.Quest, error) {
 
-	q, err := store.quests.AddQuest(ctx, gen.AddQuestParams{ID: qst.ID, Owner: qst.Owner, KnightUsername: qst.KntUsername,
+	q, err := store.quests.AddQuest(ctx, gen.AddQuestParams{ID: qst.ID, Owner: qst.Owner, Email: qst.Email,
 		Name: qst.Name, Description: qst.Description, Status: gen.QuestStatus(qst.Status)})
 	if err != nil {
 		return nil, err

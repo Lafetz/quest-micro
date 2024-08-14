@@ -12,7 +12,7 @@ import (
 )
 
 type addQuestReq struct {
-	KntUsername string `json:"kntUsername" binding:"required"`
+	Email       string `json:"email" binding:"required"`
 	Name        string `json:"name" binding:"required"`
 	Owner       string `json:"owner" binding:"required"`
 	Description string `json:"description" binding:"required"`
@@ -39,7 +39,7 @@ func (app *App) addQuest(c *gin.Context) {
 	}
 
 	questD := quest.NewQuest(questReq.Owner,
-		questReq.KntUsername, questReq.Name, questReq.Description)
+		questReq.Email, questReq.Name, questReq.Description)
 	qst, err := app.questService.AddQuest(c, *questD)
 	if err != nil {
 		if errors.Is(err, quest.ErrKntUnavailable) {
