@@ -4,7 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/gin-gonic/gin"
-	quest "github.com/lafetz/quest-micro/quest/core"
+	quest "github.com/lafetz/quest-micro/services/quest/core"
 )
 
 type App struct {

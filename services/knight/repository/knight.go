@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	commonerrors "github.com/lafetz/quest-micro/common/errors"
-	knight "github.com/lafetz/quest-micro/knight/core"
+	knight "github.com/lafetz/quest-micro/services/knight/core"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )

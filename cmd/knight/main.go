@@ -7,9 +7,9 @@ import (
 	config "github.com/lafetz/quest-micro/common/config"
 	discovery "github.com/lafetz/quest-micro/common/consul"
 	"github.com/lafetz/quest-micro/common/logger"
-	knight "github.com/lafetz/quest-micro/knight/core"
-	"github.com/lafetz/quest-micro/knight/repository"
-	knightserver "github.com/lafetz/quest-micro/knight/server"
+	knight "github.com/lafetz/quest-micro/services/knight/core"
+	"github.com/lafetz/quest-micro/services/knight/repository"
+	knightserver "github.com/lafetz/quest-micro/services/knight/server"
 )
 
 const (

@@ -14,7 +14,7 @@ RUN go mod verify
 
 
 
-COPY ./quest ./quest
+COPY ./services/quest ./services/quest
 COPY ./common ./common
 COPY ./proto ./proto
 COPY ./cmd/quest ./cmd/quest

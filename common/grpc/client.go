@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/keepalive"
 )
 
 func NewCb(name string) *gobreaker.CircuitBreaker {
@@ -19,33 +20,29 @@ func NewCb(name string) *gobreaker.CircuitBreaker {
 		},
 	})
 }
-func NewGRPCClient(remoteAddr string, cb *gobreaker.CircuitBreaker) (*grpc.ClientConn, error) {
+func NewGRPCClient(addr string, cb *gobreaker.CircuitBreaker) (*grpc.ClientConn, error) {
 
 	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithUnaryInterceptor(grpc_retry.UnaryClientInterceptor(grpc_retry.WithCodes(codes.Internal), grpc_retry.WithMax(5), grpc_retry.WithBackoff(grpc_retry.BackoffLinear(time.Second)))))
+	opts = append(opts, grpc.WithUnaryInterceptor(grpc_retry.UnaryClientInterceptor(grpc_retry.WithCodes(codes.Unavailable, codes.Aborted),
+		grpc_retry.WithMax(5),
+		grpc_retry.WithBackoff(grpc_retry.BackoffLinear(time.Second)))))
+
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+
 	opts = append(opts, grpc.WithUnaryInterceptor(CircuitBreaker(cb)))
-	conn, err := grpc.NewClient(remoteAddr, opts...)
+	opts = append(opts,
+		grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			Time:                10 * time.Second,
+			Timeout:             time.Second,
+			PermitWithoutStream: true,
+		}))
+
+	conn, err := grpc.NewClient(addr, opts...)
+
 	if err != nil {
+
 		return nil, err
 	}
 
 	return conn, nil
 }
-
-// func NewGrpcConnection(host string) (*grpc.ClientConn, error) {
-// 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-// 	defer cancel()
-// 	retryOpts := grpc.WithUnaryInterceptor(
-// 		grpc_retry.UnaryClientInterceptor(grpc_retry.WithCodes(codes.Internal),
-// 			grpc_retry.WithMax(5),
-// 			grpc_retry.WithBackoff(grpc_retry.BackoffLinear(time.Second))))
-// 	var Dialopts []grpc.DialOption
-// 	Dialopts = append(Dialopts, retryOpts)
-// 	Dialopts = append(Dialopts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-// 	conn, err := grpc.DialContext(ctx, host, Dialopts...)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return conn, nil
-// }

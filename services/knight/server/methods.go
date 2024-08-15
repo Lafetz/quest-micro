@@ -5,8 +5,8 @@ import (
 	"errors"
 
 	commonerrors "github.com/lafetz/quest-micro/common/errors"
-	knight "github.com/lafetz/quest-micro/knight/core"
 	protoknight "github.com/lafetz/quest-micro/proto/gen"
+	knight "github.com/lafetz/quest-micro/services/knight/core"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

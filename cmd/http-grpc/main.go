@@ -10,7 +10,7 @@ import (
 	discovery "github.com/lafetz/quest-micro/common/consul"
 	commongrpc "github.com/lafetz/quest-micro/common/grpc"
 	"github.com/lafetz/quest-micro/common/logger"
-	httpgrpc "github.com/lafetz/quest-micro/http-grpc"
+	httpgrpc "github.com/lafetz/quest-micro/services/http-grpc"
 )
 
 const (

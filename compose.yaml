@@ -2,15 +2,20 @@ services:
   knight:
     build:
       context: ./.
-      dockerfile: Dockerfile.knight
+      dockerfile: ./docker/Dockerfile.knight
     container_name: knight
     depends_on:
       mongo:
         condition: service_healthy
       consul:
         condition: service_healthy
-    ports:
-      - 8080:8080
+      grafana:
+        condition: service_started
+      promtail:
+        condition: service_started
+      loki:
+        condition: service_started
+
     environment:
       - DB_URL=mongodb://admin:admin11@mongo/knight?authSource=admin
       - ENV=prod
@@ -27,27 +32,44 @@ services:
   #   logging: "promtail"
   #   logging_jobname: "containerlogs"
   # logging: *default-logging
-  # # quest:
-  #   build:
-  #     context: ./.
-  #     dockerfile: Dockerfile.quest
-  #   container_name: quest
-  #   depends_on:
-  #     - postgres
-  #   ports:
-  #     - 4000:4000
-  #   environment:
-  #     - DB_URL=postgresql://user:password@postgres/quest?sslmode=disable
-  #     - ENV=dev
-  #     - PORT=4000
-  # postgres:
-  #   image: postgres:14-alpine
-  #   ports:
-  #     - 5432:5432
-  #   environment:
-  #     - POSTGRES_PASSWORD=password
-  #     - POSTGRES_USER=user
-  #     - POSTGRES_DB=quest
+  quest:
+    build:
+      context: ./.
+      dockerfile: ./docker/Dockerfile.quest
+    container_name: quest
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_started
+      consul:
+        condition: service_healthy
+      grafana:
+        condition: service_started
+      promtail:
+        condition: service_started
+      loki:
+        condition: service_started
+    ports:
+      - 4000:4000
+    environment:
+      - DB_URL=postgresql://user:password@postgres/quest?sslmode=disable
+      - ENV=dev
+      - PORT=4000
+      - LOG_LEVEL=info
+      - REGISTRY_URI=consul:8500
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    networks:
+      - app
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=user
+      - POSTGRES_DB=quest
   mongo:
     image: "mongo:7.0.5"
     ports:
@@ -56,9 +78,6 @@ services:
       - MONGO_INITDB_DATABASE=knight
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin11
-    labels:
-      logging: "promtail"
-      logging_jobname: "containerlogs"
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -70,42 +89,42 @@ services:
     networks:
       - app
 
-  # loki:
-  #   image: grafana/loki:2.9.2
-  #   container_name: loki
-  #   ports:
-  #     - 3100:3100
-  #   command: -config.file=/etc/loki/local-config.yaml
-  #   networks:
-  #     - app
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: loki
+    ports:
+      - 3100:3100
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - app
 
-  # promtail:
-  #   image: grafana/promtail:2.9.2
-  #   container_name: promtail
-  #   volumes:
-  #     - ./deployments/promtail.yaml:/etc/promtail/docker-config.yaml
-  #     - /var/lib/docker/containers:/var/lib/docker/containers:ro
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   command: -config.file=/etc/promtail/docker-config.yaml
-  #   depends_on:
-  #     - loki
-  #     - grafana
-  #   networks:
-  #     - app
+  promtail:
+    image: grafana/promtail:2.9.2
+    container_name: promtail
+    volumes:
+      - ./configs/promtail.yaml:/etc/promtail/docker-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/docker-config.yaml
+    depends_on:
+      - loki
+      - grafana
+    networks:
+      - app
 
-  # grafana:
-  #   image: grafana/grafana:10.4.2
-  #   volumes:
-  #     - ./deployments/grafana.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
-  #   environment:
-  #     - GF_AUTH_ANONYMOUS_ENABLED=true
-  #     - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-  #     - GF_AUTH_DISABLE_LOGIN_FORM=true
-  #     - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
-  #   ports:
-  #     - "3000:3000"
-  #   networks:
-  #     - app
+  grafana:
+    image: grafana/grafana:10.4.2
+    volumes:
+      - ./configs/grafana.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    ports:
+      - "3000:3000"
+    networks:
+      - app
   consul:
     image: hashicorp/consul:1.11.2
     ports:
@@ -120,13 +139,19 @@ services:
   gateway:
     build:
       context: ./.
-      dockerfile: Dockerfile.gateway
+      dockerfile: ./docker/Dockerfile.gateway
     container_name: gateway
     ports:
-      - 3000:3000
+      - 8080:8080
     restart: always
     depends_on:
       knight:
+        condition: service_started
+      grafana:
+        condition: service_started
+      promtail:
+        condition: service_started
+      loki:
         condition: service_started
     environment:
       - ENV=prod

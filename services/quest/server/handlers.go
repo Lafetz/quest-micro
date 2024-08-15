@@ -8,7 +8,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	commonerrors "github.com/lafetz/quest-micro/common/errors"
-	quest "github.com/lafetz/quest-micro/quest/core"
+	quest "github.com/lafetz/quest-micro/services/quest/core"
 )
 
 type addQuestReq struct {

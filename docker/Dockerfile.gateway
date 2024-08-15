@@ -14,7 +14,7 @@ RUN go mod verify
 
 
 
-COPY ./http-grpc ./http-grpc
+COPY ./services/http-grpc ./services/http-grpc
 COPY ./common ./common
 COPY ./proto ./proto
 COPY ./cmd/http-grpc ./cmd/http-grpc

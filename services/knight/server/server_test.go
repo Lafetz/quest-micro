@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	knight "github.com/lafetz/quest-micro/knight/core"
-	"github.com/lafetz/quest-micro/knight/repository"
 	protoknight "github.com/lafetz/quest-micro/proto/gen"
+	knight "github.com/lafetz/quest-micro/services/knight/core"
+	"github.com/lafetz/quest-micro/services/knight/repository"
 	"github.com/testcontainers/testcontainers-go/modules/mongodb"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"

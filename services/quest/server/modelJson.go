@@ -2,7 +2,7 @@ package questserver
 
 import (
 	"github.com/google/uuid"
-	quest "github.com/lafetz/quest-micro/quest/core"
+	quest "github.com/lafetz/quest-micro/services/quest/core"
 )
 
 type Quest struct {

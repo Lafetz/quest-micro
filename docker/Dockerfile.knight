@@ -14,7 +14,7 @@ RUN go mod verify
 
 
 
-COPY ./knight ./knight
+COPY ./services/knight ./services/knight
 COPY ./common ./common
 COPY ./proto ./proto
 COPY ./cmd/knight ./cmd/knight
