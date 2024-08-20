@@ -3,8 +3,8 @@ package repository
 import (
 	"fmt"
 
-	quest "github.com/lafetz/quest-micro/quest/core"
-	"github.com/lafetz/quest-micro/quest/repository/gen"
+	quest "github.com/lafetz/quest-micro/services/quest/core"
+	"github.com/lafetz/quest-micro/services/quest/repository/gen"
 )
 
 type ErrStatus string

@@ -17,6 +17,9 @@ type addQuestReq struct {
 	Owner       string `json:"owner" binding:"required"`
 	Description string `json:"description" binding:"required"`
 }
+type getQuestReq struct {
+	Email string `json:"email" binding:"required"`
+}
 
 func (app *App) addQuest(c *gin.Context) {
 	var questReq addQuestReq
@@ -68,15 +71,26 @@ func (app *App) addQuest(c *gin.Context) {
 
 }
 func (app *App) getAssignedQuests(c *gin.Context) {
-	kntName := c.Query("kntName")
+	var questReq getQuestReq
+	if err := c.ShouldBind(&questReq); err != nil {
 
-	if kntName == "" {
+		_, ok := err.(validator.ValidationErrors)
+
+		if ok {
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"error":   "There was a problem with the provided data",
+				"details": ValidateModel(err),
+			})
+			return
+
+		}
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "kntName query parameter is required",
+			"error": "Error processing request body",
 		})
 		return
 	}
-	quests, err := app.questService.GetAssignedQuests(c, kntName)
+
+	quests, err := app.questService.GetAssignedQuests(c, questReq.Email)
 	if err != nil {
 		app.logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{

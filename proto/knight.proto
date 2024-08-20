@@ -57,9 +57,37 @@ service KnightService {
     };
   }
 
-  rpc GetKnightStatus(KnightStatusReq) returns (KnightStatusRes);
-  rpc UpdateStatus(UpdateStatusReq) returns (UpdateStatusRes);
-  rpc GetKnights(GetKnightsReq) returns (GetKnightsRes);
-  rpc GetKnight(GetKnightReq) returns (GetKnightRes);
-  rpc DeleteKnight(DeleteKnightReq) returns (DeleteKnightRes);
+  rpc GetKnightStatus(KnightStatusReq) returns (KnightStatusRes) {
+    option (google.api.http) = {
+      get: "/v1/knight/status"
+      body: "*"
+    };
+  }
+
+  rpc UpdateStatus(UpdateStatusReq) returns (UpdateStatusRes) {
+    option (google.api.http) = {
+      patch: "/v1/knight/status"
+      body: "*"
+    };
+  }
+
+  rpc GetKnights(GetKnightsReq) returns (GetKnightsRes) {
+    option (google.api.http) = {
+      get: "/v1/knights"
+    };
+  }
+
+  rpc GetKnight(GetKnightReq) returns (GetKnightRes) {
+    option (google.api.http) = {
+      get: "/v1/knight"
+      body: "*"
+    };
+  }
+
+  rpc DeleteKnight(DeleteKnightReq) returns (DeleteKnightRes) {
+    option (google.api.http) = {
+      delete: "/v1/knight"
+      body: "*"
+    };
+  }
 }

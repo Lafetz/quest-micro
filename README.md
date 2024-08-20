@@ -1,6 +1,7 @@
-# QUEST 
+# QUEST-MICRO
 
-Go microservice, organized in a monorepo structure using gRPC, REST APIs, and kafka to facilitate interactions between services.The system is designed to demonstrate how these technologies can be integrated to build a scalable and efficient distributed architecture.
+Go microservice, organized in a monorepo structure using gRPC and REST APIs to facilitate interactions between services.The system is designed to demonstrate how these technologies can be integrated to build a scalable and efficient distributed architecture.
+
 ## Diagram
 
 <img width="1028" alt="image" src="https://raw.githubusercontent.com/Lafetz/quest-demo/main/docs/diagram.png">
@@ -9,7 +10,6 @@ Go microservice, organized in a monorepo structure using gRPC, REST APIs, and ka
 
 - gRPC for fast communication between services.
 - RESTful APIs are available for easy connections with external systems.
-- Kafka for messaging.
 - Service Discovery using Consul.
 - Resiliency Patterns like circuit breakers and retry mechanisms.
 - Health Checks to monitor service status.
@@ -20,9 +20,9 @@ Go microservice, organized in a monorepo structure using gRPC, REST APIs, and ka
 
 ## Monitoring
 
-[x] structured Logging and Aggregation
-[] Prometheus for performance monitoring and alerting
-[] Tracing with Jaeger
+- [x] structured Logging and Aggregation using loki/promtail
+- [] Prometheus for performance monitoring and alerting
+- [] Tracing with Jaeger
 
 ## imgs
 

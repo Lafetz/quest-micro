@@ -15,11 +15,10 @@ services:
         condition: service_started
       loki:
         condition: service_started
-
     environment:
       - DB_URL=mongodb://admin:admin11@mongo/knight?authSource=admin
       - ENV=prod
-      - PORT=8080
+      - PORT=2000
       - LOG_LEVEL=info
       - REGISTRY_URI=consul:8500
     labels:
@@ -28,10 +27,6 @@ services:
     networks:
       - app
 
-  # labels:
-  #   logging: "promtail"
-  #   logging_jobname: "containerlogs"
-  # logging: *default-logging
   quest:
     build:
       context: ./.
@@ -39,6 +34,8 @@ services:
     container_name: quest
     restart: always
     depends_on:
+      knight:
+        condition: service_started
       postgres:
         condition: service_started
       consul:
@@ -52,7 +49,7 @@ services:
     ports:
       - 4000:4000
     environment:
-      - DB_URL=postgresql://user:password@postgres/quest?sslmode=disable
+      - DB_URL=postgres://user:password@postgres/quest?sslmode=disable
       - ENV=dev
       - PORT=4000
       - LOG_LEVEL=info
@@ -64,12 +61,34 @@ services:
       - app
   postgres:
     image: postgres:14-alpine
-    ports:
-      - 5432:5432
+    # ports:
+    #   - 5432:5432
+
     environment:
       - POSTGRES_PASSWORD=password
       - POSTGRES_USER=user
       - POSTGRES_DB=quest
+    networks:
+      - app
+  migrate:
+    image: migrate/migrate
+    volumes:
+      - ./db/migrations:/migrations
+    command:
+      [
+        "-path",
+        "/migrations",
+        "-database",
+        "postgres://user:password@postgres:5432/quest?sslmode=disable",
+        "up",
+      ]
+    networks:
+      - app
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    links:
+      - postgres
   mongo:
     image: "mongo:7.0.5"
     ports:
@@ -155,7 +174,7 @@ services:
         condition: service_started
     environment:
       - ENV=prod
-      - PORT=3000
+      - PORT=8080
       - LOG_LEVEL=info
       - REGISTRY_URI=consul:8500
     labels:

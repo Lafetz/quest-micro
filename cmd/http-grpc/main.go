@@ -41,6 +41,7 @@ func main() {
 		os.Exit(1)
 	}
 	cb := commongrpc.NewCb("knightGrpc")
+
 	conn, err := commongrpc.NewGRPCClient(addrs[0], cb)
 	if err != nil {
 		log.Error("unable to make connection with grpc service", "error", err.Error())
@@ -52,7 +53,10 @@ func main() {
 		os.Exit(1)
 	}
 	log.Info("Server running")
-	if err := srv.ListenAndServe(); errors.Is(err, http.ErrServerClosed) {
+
+	err = srv.ListenAndServe()
+
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		slog.Error("failed to listen and serve", err)
 	}
 
