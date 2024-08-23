@@ -18,12 +18,14 @@ services:
     environment:
       - DB_URL=mongodb://admin:admin11@mongo/knight?authSource=admin
       - ENV=prod
-      - PORT=2000
+      - PORT=4000
       - LOG_LEVEL=info
       - REGISTRY_URI=consul:8500
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
+    ports:
+      - 4000:4000
     networks:
       - app
 
@@ -46,8 +48,7 @@ services:
         condition: service_started
       loki:
         condition: service_started
-    ports:
-      - 4000:4000
+
     environment:
       - DB_URL=postgres://user:password@postgres/quest?sslmode=disable
       - ENV=dev
@@ -158,7 +159,7 @@ services:
   gateway:
     build:
       context: ./.
-      dockerfile: ./docker/Dockerfile.gateway
+      dockerfile: ./docker/Dockerfile.httpgrpc
     container_name: gateway
     ports:
       - 8080:8080

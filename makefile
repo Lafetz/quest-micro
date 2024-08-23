@@ -23,3 +23,8 @@ run-gateway:
 	@set -o allexport; source ./load_env.sh; set +o allexport; \
 	echo "Running quest service application"; \
 	go run ./cmd/http-grpc/main.go
+run-herald:
+	@echo "Loading environment variables from .env file"
+	@set -o allexport; source ./load_env.sh; set +o allexport; \
+	echo "Running herald service application"; \
+	go run ./cmd/herald/main.go

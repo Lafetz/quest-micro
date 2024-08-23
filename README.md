@@ -1,6 +1,6 @@
 # QUEST-MICRO
 
-Go microservice, organized in a monorepo structure using gRPC and REST APIs to facilitate interactions between services.The system is designed to demonstrate how these technologies can be integrated to build a scalable and efficient distributed architecture.
+Go microservice, organized in a monorepo structure using gRPC to facilitate interactions between services.The system is designed to demonstrate how these technologies can be integrated to build a scalable and efficient distributed architecture.
 
 ## Diagram
 
@@ -9,6 +9,7 @@ Go microservice, organized in a monorepo structure using gRPC and REST APIs to f
 ## Features
 
 - gRPC for fast communication between services.
+- Consul for Service Registry
 - RESTful APIs are available for easy connections with external systems.
 - Service Discovery using Consul.
 - Resiliency Patterns like circuit breakers and retry mechanisms.
@@ -21,8 +22,8 @@ Go microservice, organized in a monorepo structure using gRPC and REST APIs to f
 ## Monitoring
 
 - [x] structured Logging and Aggregation using loki/promtail
-- [] Prometheus for performance monitoring and alerting
-- [] Tracing with Jaeger
+- [ ] Prometheus for performance monitoring and alerting
+- [ ] Tracing with Jaeger
 
 ## imgs
 
@@ -39,4 +40,3 @@ To run the application using Docker, you can follow these steps:
    ```sh
    docker compose up --build
    ```
-

@@ -9,7 +9,8 @@ import (
 	"strconv"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	knightpb "github.com/lafetz/quest-micro/proto/gen"
+	knightv1 "github.com/lafetz/quest-micro/proto/gen/knight/v1"
+
 	"google.golang.org/grpc"
 )
 
@@ -42,7 +43,7 @@ func NewGatewayServer(conn *grpc.ClientConn, port int, logger *slog.Logger) (*ht
 		runtime.WithErrorHandler(HttpErrorHandler),
 	)
 
-	err := knightpb.RegisterKnightServiceHandler(context.Background(), gwmux, conn)
+	err := knightv1.RegisterKnightServiceHandler(context.Background(), gwmux, conn)
 	if err != nil {
 		return nil, err
 	}

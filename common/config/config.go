@@ -23,6 +23,11 @@ type Config struct {
 	LogLevel    slog.Level
 	RegistryURI string
 	HostName    string
+	//
+	SMTPhost     string
+	SMTPport     int
+	SMTPusername string
+	SMTPpassword string
 }
 
 type Option func(*Config) error
@@ -63,7 +68,53 @@ func WithDbUrl() Option {
 		return nil
 	}
 }
+func WithSMTPHost() Option {
+	return func(c *Config) error {
+		smtpHost := os.Getenv("SMTP_HOST")
+		if smtpHost == "" {
+			return errors.New("SMTP host is required")
+		}
+		c.SMTPhost = smtpHost
+		return nil
+	}
+}
 
+func WithSMTPPort() Option {
+	return func(c *Config) error {
+		smtpPortStr := os.Getenv("SMTP_PORT")
+		if smtpPortStr == "" {
+			return errors.New("SMTP port is required")
+		}
+		smtpPort, err := strconv.Atoi(smtpPortStr)
+		if err != nil {
+			return errors.New("invalid SMTP port")
+		}
+		c.SMTPport = smtpPort
+		return nil
+	}
+}
+
+func WithSMTPUsername() Option {
+	return func(c *Config) error {
+		smtpUsername := os.Getenv("SMTP_USERNAME")
+		if smtpUsername == "" {
+			return errors.New("SMTP username is required")
+		}
+		c.SMTPusername = smtpUsername
+		return nil
+	}
+}
+
+func WithSMTPPassword() Option {
+	return func(c *Config) error {
+		smtpPassword := os.Getenv("SMTP_PASSWORD")
+		if smtpPassword == "" {
+			return errors.New("SMTP password is required")
+		}
+		c.SMTPpassword = smtpPassword
+		return nil
+	}
+}
 func WithPort() Option {
 	return func(c *Config) error {
 		portStr := os.Getenv("PORT")

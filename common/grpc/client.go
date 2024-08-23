@@ -5,6 +5,7 @@ import (
 
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"github.com/sony/gobreaker"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -45,4 +46,5 @@ func NewGRPCClient(addr string, cb *gobreaker.CircuitBreaker) (*grpc.ClientConn,
 	}
 
 	return conn, nil
+
 }

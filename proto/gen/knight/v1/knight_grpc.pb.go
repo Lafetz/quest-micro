@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             (unknown)
-// source: knight.proto
+// source: knight/v1/knight.proto
 
-package proto
+package knightv1
 
 import (
 	context "context"
@@ -19,24 +19,24 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	KnightService_AddKnight_FullMethodName       = "/protoknight.KnightService/AddKnight"
-	KnightService_GetKnightStatus_FullMethodName = "/protoknight.KnightService/GetKnightStatus"
-	KnightService_UpdateStatus_FullMethodName    = "/protoknight.KnightService/UpdateStatus"
-	KnightService_GetKnights_FullMethodName      = "/protoknight.KnightService/GetKnights"
-	KnightService_GetKnight_FullMethodName       = "/protoknight.KnightService/GetKnight"
-	KnightService_DeleteKnight_FullMethodName    = "/protoknight.KnightService/DeleteKnight"
+	KnightService_AddKnight_FullMethodName       = "/knight.v1.KnightService/AddKnight"
+	KnightService_GetKnightStatus_FullMethodName = "/knight.v1.KnightService/GetKnightStatus"
+	KnightService_UpdateStatus_FullMethodName    = "/knight.v1.KnightService/UpdateStatus"
+	KnightService_GetKnights_FullMethodName      = "/knight.v1.KnightService/GetKnights"
+	KnightService_GetKnight_FullMethodName       = "/knight.v1.KnightService/GetKnight"
+	KnightService_DeleteKnight_FullMethodName    = "/knight.v1.KnightService/DeleteKnight"
 )
 
 // KnightServiceClient is the client API for KnightService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type KnightServiceClient interface {
-	AddKnight(ctx context.Context, in *AddKnightReq, opts ...grpc.CallOption) (*AddKnightRes, error)
-	GetKnightStatus(ctx context.Context, in *KnightStatusReq, opts ...grpc.CallOption) (*KnightStatusRes, error)
-	UpdateStatus(ctx context.Context, in *UpdateStatusReq, opts ...grpc.CallOption) (*UpdateStatusRes, error)
-	GetKnights(ctx context.Context, in *GetKnightsReq, opts ...grpc.CallOption) (*GetKnightsRes, error)
-	GetKnight(ctx context.Context, in *GetKnightReq, opts ...grpc.CallOption) (*GetKnightRes, error)
-	DeleteKnight(ctx context.Context, in *DeleteKnightReq, opts ...grpc.CallOption) (*DeleteKnightRes, error)
+	AddKnight(ctx context.Context, in *AddKnightRequest, opts ...grpc.CallOption) (*AddKnightResponse, error)
+	GetKnightStatus(ctx context.Context, in *GetKnightStatusRequest, opts ...grpc.CallOption) (*GetKnightStatusResponse, error)
+	UpdateStatus(ctx context.Context, in *UpdateStatusRequest, opts ...grpc.CallOption) (*UpdateStatusResponse, error)
+	GetKnights(ctx context.Context, in *GetKnightsRequest, opts ...grpc.CallOption) (*GetKnightsResponse, error)
+	GetKnight(ctx context.Context, in *GetKnightRequest, opts ...grpc.CallOption) (*GetKnightResponse, error)
+	DeleteKnight(ctx context.Context, in *DeleteKnightRequest, opts ...grpc.CallOption) (*DeleteKnightResponse, error)
 }
 
 type knightServiceClient struct {
@@ -47,8 +47,8 @@ func NewKnightServiceClient(cc grpc.ClientConnInterface) KnightServiceClient {
 	return &knightServiceClient{cc}
 }
 
-func (c *knightServiceClient) AddKnight(ctx context.Context, in *AddKnightReq, opts ...grpc.CallOption) (*AddKnightRes, error) {
-	out := new(AddKnightRes)
+func (c *knightServiceClient) AddKnight(ctx context.Context, in *AddKnightRequest, opts ...grpc.CallOption) (*AddKnightResponse, error) {
+	out := new(AddKnightResponse)
 	err := c.cc.Invoke(ctx, KnightService_AddKnight_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -56,8 +56,8 @@ func (c *knightServiceClient) AddKnight(ctx context.Context, in *AddKnightReq, o
 	return out, nil
 }
 
-func (c *knightServiceClient) GetKnightStatus(ctx context.Context, in *KnightStatusReq, opts ...grpc.CallOption) (*KnightStatusRes, error) {
-	out := new(KnightStatusRes)
+func (c *knightServiceClient) GetKnightStatus(ctx context.Context, in *GetKnightStatusRequest, opts ...grpc.CallOption) (*GetKnightStatusResponse, error) {
+	out := new(GetKnightStatusResponse)
 	err := c.cc.Invoke(ctx, KnightService_GetKnightStatus_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -65,8 +65,8 @@ func (c *knightServiceClient) GetKnightStatus(ctx context.Context, in *KnightSta
 	return out, nil
 }
 
-func (c *knightServiceClient) UpdateStatus(ctx context.Context, in *UpdateStatusReq, opts ...grpc.CallOption) (*UpdateStatusRes, error) {
-	out := new(UpdateStatusRes)
+func (c *knightServiceClient) UpdateStatus(ctx context.Context, in *UpdateStatusRequest, opts ...grpc.CallOption) (*UpdateStatusResponse, error) {
+	out := new(UpdateStatusResponse)
 	err := c.cc.Invoke(ctx, KnightService_UpdateStatus_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -74,8 +74,8 @@ func (c *knightServiceClient) UpdateStatus(ctx context.Context, in *UpdateStatus
 	return out, nil
 }
 
-func (c *knightServiceClient) GetKnights(ctx context.Context, in *GetKnightsReq, opts ...grpc.CallOption) (*GetKnightsRes, error) {
-	out := new(GetKnightsRes)
+func (c *knightServiceClient) GetKnights(ctx context.Context, in *GetKnightsRequest, opts ...grpc.CallOption) (*GetKnightsResponse, error) {
+	out := new(GetKnightsResponse)
 	err := c.cc.Invoke(ctx, KnightService_GetKnights_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -83,8 +83,8 @@ func (c *knightServiceClient) GetKnights(ctx context.Context, in *GetKnightsReq,
 	return out, nil
 }
 
-func (c *knightServiceClient) GetKnight(ctx context.Context, in *GetKnightReq, opts ...grpc.CallOption) (*GetKnightRes, error) {
-	out := new(GetKnightRes)
+func (c *knightServiceClient) GetKnight(ctx context.Context, in *GetKnightRequest, opts ...grpc.CallOption) (*GetKnightResponse, error) {
+	out := new(GetKnightResponse)
 	err := c.cc.Invoke(ctx, KnightService_GetKnight_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -92,8 +92,8 @@ func (c *knightServiceClient) GetKnight(ctx context.Context, in *GetKnightReq, o
 	return out, nil
 }
 
-func (c *knightServiceClient) DeleteKnight(ctx context.Context, in *DeleteKnightReq, opts ...grpc.CallOption) (*DeleteKnightRes, error) {
-	out := new(DeleteKnightRes)
+func (c *knightServiceClient) DeleteKnight(ctx context.Context, in *DeleteKnightRequest, opts ...grpc.CallOption) (*DeleteKnightResponse, error) {
+	out := new(DeleteKnightResponse)
 	err := c.cc.Invoke(ctx, KnightService_DeleteKnight_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -105,12 +105,12 @@ func (c *knightServiceClient) DeleteKnight(ctx context.Context, in *DeleteKnight
 // All implementations must embed UnimplementedKnightServiceServer
 // for forward compatibility
 type KnightServiceServer interface {
-	AddKnight(context.Context, *AddKnightReq) (*AddKnightRes, error)
-	GetKnightStatus(context.Context, *KnightStatusReq) (*KnightStatusRes, error)
-	UpdateStatus(context.Context, *UpdateStatusReq) (*UpdateStatusRes, error)
-	GetKnights(context.Context, *GetKnightsReq) (*GetKnightsRes, error)
-	GetKnight(context.Context, *GetKnightReq) (*GetKnightRes, error)
-	DeleteKnight(context.Context, *DeleteKnightReq) (*DeleteKnightRes, error)
+	AddKnight(context.Context, *AddKnightRequest) (*AddKnightResponse, error)
+	GetKnightStatus(context.Context, *GetKnightStatusRequest) (*GetKnightStatusResponse, error)
+	UpdateStatus(context.Context, *UpdateStatusRequest) (*UpdateStatusResponse, error)
+	GetKnights(context.Context, *GetKnightsRequest) (*GetKnightsResponse, error)
+	GetKnight(context.Context, *GetKnightRequest) (*GetKnightResponse, error)
+	DeleteKnight(context.Context, *DeleteKnightRequest) (*DeleteKnightResponse, error)
 	mustEmbedUnimplementedKnightServiceServer()
 }
 
@@ -118,22 +118,22 @@ type KnightServiceServer interface {
 type UnimplementedKnightServiceServer struct {
 }
 
-func (UnimplementedKnightServiceServer) AddKnight(context.Context, *AddKnightReq) (*AddKnightRes, error) {
+func (UnimplementedKnightServiceServer) AddKnight(context.Context, *AddKnightRequest) (*AddKnightResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddKnight not implemented")
 }
-func (UnimplementedKnightServiceServer) GetKnightStatus(context.Context, *KnightStatusReq) (*KnightStatusRes, error) {
+func (UnimplementedKnightServiceServer) GetKnightStatus(context.Context, *GetKnightStatusRequest) (*GetKnightStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetKnightStatus not implemented")
 }
-func (UnimplementedKnightServiceServer) UpdateStatus(context.Context, *UpdateStatusReq) (*UpdateStatusRes, error) {
+func (UnimplementedKnightServiceServer) UpdateStatus(context.Context, *UpdateStatusRequest) (*UpdateStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateStatus not implemented")
 }
-func (UnimplementedKnightServiceServer) GetKnights(context.Context, *GetKnightsReq) (*GetKnightsRes, error) {
+func (UnimplementedKnightServiceServer) GetKnights(context.Context, *GetKnightsRequest) (*GetKnightsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetKnights not implemented")
 }
-func (UnimplementedKnightServiceServer) GetKnight(context.Context, *GetKnightReq) (*GetKnightRes, error) {
+func (UnimplementedKnightServiceServer) GetKnight(context.Context, *GetKnightRequest) (*GetKnightResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetKnight not implemented")
 }
-func (UnimplementedKnightServiceServer) DeleteKnight(context.Context, *DeleteKnightReq) (*DeleteKnightRes, error) {
+func (UnimplementedKnightServiceServer) DeleteKnight(context.Context, *DeleteKnightRequest) (*DeleteKnightResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteKnight not implemented")
 }
 func (UnimplementedKnightServiceServer) mustEmbedUnimplementedKnightServiceServer() {}
@@ -150,7 +150,7 @@ func RegisterKnightServiceServer(s grpc.ServiceRegistrar, srv KnightServiceServe
 }
 
 func _KnightService_AddKnight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddKnightReq)
+	in := new(AddKnightRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -162,13 +162,13 @@ func _KnightService_AddKnight_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: KnightService_AddKnight_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KnightServiceServer).AddKnight(ctx, req.(*AddKnightReq))
+		return srv.(KnightServiceServer).AddKnight(ctx, req.(*AddKnightRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _KnightService_GetKnightStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(KnightStatusReq)
+	in := new(GetKnightStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -180,13 +180,13 @@ func _KnightService_GetKnightStatus_Handler(srv interface{}, ctx context.Context
 		FullMethod: KnightService_GetKnightStatus_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KnightServiceServer).GetKnightStatus(ctx, req.(*KnightStatusReq))
+		return srv.(KnightServiceServer).GetKnightStatus(ctx, req.(*GetKnightStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _KnightService_UpdateStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateStatusReq)
+	in := new(UpdateStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -198,13 +198,13 @@ func _KnightService_UpdateStatus_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: KnightService_UpdateStatus_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KnightServiceServer).UpdateStatus(ctx, req.(*UpdateStatusReq))
+		return srv.(KnightServiceServer).UpdateStatus(ctx, req.(*UpdateStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _KnightService_GetKnights_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetKnightsReq)
+	in := new(GetKnightsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -216,13 +216,13 @@ func _KnightService_GetKnights_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: KnightService_GetKnights_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KnightServiceServer).GetKnights(ctx, req.(*GetKnightsReq))
+		return srv.(KnightServiceServer).GetKnights(ctx, req.(*GetKnightsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _KnightService_GetKnight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetKnightReq)
+	in := new(GetKnightRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -234,13 +234,13 @@ func _KnightService_GetKnight_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: KnightService_GetKnight_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KnightServiceServer).GetKnight(ctx, req.(*GetKnightReq))
+		return srv.(KnightServiceServer).GetKnight(ctx, req.(*GetKnightRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _KnightService_DeleteKnight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteKnightReq)
+	in := new(DeleteKnightRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -252,7 +252,7 @@ func _KnightService_DeleteKnight_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: KnightService_DeleteKnight_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KnightServiceServer).DeleteKnight(ctx, req.(*DeleteKnightReq))
+		return srv.(KnightServiceServer).DeleteKnight(ctx, req.(*DeleteKnightRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -261,7 +261,7 @@ func _KnightService_DeleteKnight_Handler(srv interface{}, ctx context.Context, d
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var KnightService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "protoknight.KnightService",
+	ServiceName: "knight.v1.KnightService",
 	HandlerType: (*KnightServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -290,5 +290,5 @@ var KnightService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "knight.proto",
+	Metadata: "knight/v1/knight.proto",
 }

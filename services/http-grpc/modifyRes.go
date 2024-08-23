@@ -3,6 +3,7 @@ package httpgrpc
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -30,8 +31,10 @@ func mapGRPCCodeToHTTPStatus(code codes.Code) int {
 		return http.StatusNotFound
 	case codes.AlreadyExists:
 		return http.StatusConflict
-	case codes.Unavailable:
-		return http.StatusServiceUnavailable
+	// case codes.Unavailable:
+	// 	return http.StatusServiceUnavailable
+	case codes.Unimplemented:
+		return http.StatusNotFound
 	default:
 		return http.StatusInternalServerError
 	}
@@ -49,6 +52,7 @@ func HttpErrorHandler(ctx context.Context, mux *runtime.ServeMux, m runtime.Mars
 	}
 
 	// error handler
+	slog.Error(err.Error())
 	s, ok := status.FromError(err)
 	httpStatus := mapGRPCCodeToHTTPStatus(s.Code())
 
@@ -57,7 +61,10 @@ func HttpErrorHandler(ctx context.Context, mux *runtime.ServeMux, m runtime.Mars
 	}
 	var errMsg string
 	if httpStatus >= 500 { // prevent returning port when there is connection error
-		errMsg = "internal server error"
+		errMsg = "Internal Server Error"
+		//log
+	} else if httpStatus == 404 {
+		errMsg = "Not Found"
 	} else {
 		errMsg = s.Message()
 	}

@@ -5,7 +5,8 @@ import (
 	"errors"
 
 	commonerrors "github.com/lafetz/quest-micro/common/errors"
-	protoknight "github.com/lafetz/quest-micro/proto/gen"
+	knightv1 "github.com/lafetz/quest-micro/proto/gen/knight/v1"
+
 	knight "github.com/lafetz/quest-micro/services/knight/core"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
@@ -16,7 +17,7 @@ var (
 	ErrValidate = errors.New("there was a problem with the provided data")
 )
 
-func (g *KnightServer) AddKnight(ctx context.Context, req *protoknight.AddKnightReq) (*protoknight.AddKnightRes, error) {
+func (g *KnightServer) AddKnight(ctx context.Context, req *knightv1.AddKnightRequest) (*knightv1.AddKnightResponse, error) {
 
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "nil req ")
@@ -38,10 +39,10 @@ func (g *KnightServer) AddKnight(ctx context.Context, req *protoknight.AddKnight
 		g.logger.Error(err.Error())
 		return nil, status.Errorf(codes.Internal, "internal error")
 	}
-	return &protoknight.AddKnightRes{Id: kntR.Id.String(), Name: kntR.Name, Email: kntR.Email, IsActive: kntR.IsActive}, nil
+	return &knightv1.AddKnightResponse{Id: kntR.Id.String(), Name: kntR.Name, Email: kntR.Email, IsActive: kntR.IsActive}, nil
 }
 
-func (g *KnightServer) GetKnightStatus(ctx context.Context, req *protoknight.KnightStatusReq) (*protoknight.KnightStatusRes, error) {
+func (g *KnightServer) GetKnightStatus(ctx context.Context, req *knightv1.GetKnightStatusRequest) (*knightv1.GetKnightStatusResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "nil req ")
 	}
@@ -65,10 +66,10 @@ func (g *KnightServer) GetKnightStatus(ctx context.Context, req *protoknight.Kni
 
 		return nil, status.Errorf(codes.Internal, "internal error")
 	}
-	return &protoknight.KnightStatusRes{IsActive: isActive}, nil
+	return &knightv1.GetKnightStatusResponse{IsActive: isActive}, nil
 }
 
-func (g *KnightServer) UpdateStatus(ctx context.Context, req *protoknight.UpdateStatusReq) (*protoknight.UpdateStatusRes, error) {
+func (g *KnightServer) UpdateStatus(ctx context.Context, req *knightv1.UpdateStatusRequest) (*knightv1.UpdateStatusResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "nil req")
 	}
@@ -82,17 +83,17 @@ func (g *KnightServer) UpdateStatus(ctx context.Context, req *protoknight.Update
 		g.logger.Error(err.Error())
 		return nil, status.Errorf(codes.Internal, "internal error")
 	}
-	return &protoknight.UpdateStatusRes{}, nil
+	return &knightv1.UpdateStatusResponse{}, nil
 }
-func (g *KnightServer) GetKnights(ctx context.Context, req *protoknight.GetKnightsReq) (*protoknight.GetKnightsRes, error) {
+func (g *KnightServer) GetKnights(ctx context.Context, req *knightv1.GetKnightsRequest) (*knightv1.GetKnightsResponse, error) {
 	knights, err := g.knightService.GetKnights(ctx)
 	if err != nil {
 		g.logger.Error(err.Error())
 		return nil, status.Errorf(codes.Internal, "internal error")
 	}
-	var responseKnights []*protoknight.Knight
+	var responseKnights []*knightv1.Knight
 	for _, knight := range knights {
-		responseKnights = append(responseKnights, &protoknight.Knight{
+		responseKnights = append(responseKnights, &knightv1.Knight{
 			Id:       knight.Id.String(),
 			Name:     knight.Name,
 			Email:    knight.Email,
@@ -100,11 +101,11 @@ func (g *KnightServer) GetKnights(ctx context.Context, req *protoknight.GetKnigh
 		})
 	}
 
-	return &protoknight.GetKnightsRes{
+	return &knightv1.GetKnightsResponse{
 		Knights: responseKnights,
 	}, nil
 }
-func (g *KnightServer) GetKnight(ctx context.Context, req *protoknight.GetKnightReq) (*protoknight.GetKnightRes, error) {
+func (g *KnightServer) GetKnight(ctx context.Context, req *knightv1.GetKnightRequest) (*knightv1.GetKnightResponse, error) {
 	knight, err := g.knightService.GetKnight(ctx, req.GetEmail())
 	if err != nil && errors.Is(err, commonerrors.ErrKnightNotFound) {
 
@@ -116,8 +117,8 @@ func (g *KnightServer) GetKnight(ctx context.Context, req *protoknight.GetKnight
 		return nil, status.Errorf(codes.Internal, "internal error")
 	}
 
-	return &protoknight.GetKnightRes{
-		Knight: &protoknight.Knight{
+	return &knightv1.GetKnightResponse{
+		Knight: &knightv1.Knight{
 			Id:       knight.Id.String(),
 			Name:     knight.Name,
 			Email:    knight.Email,
@@ -125,7 +126,7 @@ func (g *KnightServer) GetKnight(ctx context.Context, req *protoknight.GetKnight
 		},
 	}, nil
 }
-func (g *KnightServer) DeleteKnight(ctx context.Context, req *protoknight.DeleteKnightReq) (*protoknight.DeleteKnightRes, error) {
+func (g *KnightServer) DeleteKnight(ctx context.Context, req *knightv1.DeleteKnightRequest) (*knightv1.DeleteKnightResponse, error) {
 	err := g.knightService.DeleteKnight(ctx, req.GetEmail())
 	if err != nil && errors.Is(err, commonerrors.ErrKnightNotFound) {
 
@@ -137,5 +138,5 @@ func (g *KnightServer) DeleteKnight(ctx context.Context, req *protoknight.Delete
 		return nil, status.Errorf(codes.Internal, "internal error")
 	}
 
-	return &protoknight.DeleteKnightRes{}, nil
+	return &knightv1.DeleteKnightResponse{}, nil
 }

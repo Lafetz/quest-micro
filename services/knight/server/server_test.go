@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	protoknight "github.com/lafetz/quest-micro/proto/gen"
+	knightv1 "github.com/lafetz/quest-micro/proto/gen/knight/v1"
 	knight "github.com/lafetz/quest-micro/services/knight/core"
 	"github.com/lafetz/quest-micro/services/knight/repository"
 	"github.com/testcontainers/testcontainers-go/modules/mongodb"
@@ -127,25 +127,25 @@ func TestAddKnight(t *testing.T) {
 	grpcServer := NewKnightServer("knight", "zxc", &registry{}, svc, 8080, slog.Default())
 
 	conn := newServer(t, func(srv *grpc.Server) {
-		protoknight.RegisterKnightServiceServer(srv, grpcServer)
+		knightv1.RegisterKnightServiceServer(srv, grpcServer)
 	})
 
-	client := protoknight.NewKnightServiceClient(conn)
+	client := knightv1.NewKnightServiceClient(conn)
 	type expectation struct {
-		out *protoknight.AddKnightRes
+		out *knightv1.AddKnightResponse
 		err error
 	}
 	tests := map[string]struct {
-		in       *protoknight.AddKnightReq
+		in       *knightv1.AddKnightRequest
 		expected expectation
 	}{
 		"Successful AddKnight": {
-			in: &protoknight.AddKnightReq{
+			in: &knightv1.AddKnightRequest{
 				Name:  "Sir Lancelot",
 				Email: "lancelot@example.com",
 			},
 			expected: expectation{
-				out: &protoknight.AddKnightRes{
+				out: &knightv1.AddKnightResponse{
 					Id:       "some-uuid", // UUID validation is expected
 					Name:     "Sir Lancelot",
 					Email:    "lancelot@example.com",
@@ -155,7 +155,7 @@ func TestAddKnight(t *testing.T) {
 			},
 		},
 		"Invalid Email": {
-			in: &protoknight.AddKnightReq{
+			in: &knightv1.AddKnightRequest{
 				Name:  "Sir Lancelot",
 				Email: "invalid-email",
 			},
@@ -165,7 +165,7 @@ func TestAddKnight(t *testing.T) {
 			},
 		},
 		"Empty Name": {
-			in: &protoknight.AddKnightReq{
+			in: &knightv1.AddKnightRequest{
 				Name:  "",
 				Email: "lancelot@example.com",
 			},
@@ -175,7 +175,7 @@ func TestAddKnight(t *testing.T) {
 			},
 		},
 		"Empty Email": {
-			in: &protoknight.AddKnightReq{
+			in: &knightv1.AddKnightRequest{
 				Name:  "Sir Lancelot",
 				Email: "",
 			},
@@ -185,7 +185,7 @@ func TestAddKnight(t *testing.T) {
 			},
 		},
 		"Duplicate Email": {
-			in: &protoknight.AddKnightReq{
+			in: &knightv1.AddKnightRequest{
 				Name:  "Sir Lancelot",
 				Email: "lancelot@example.com",
 			},

@@ -18,8 +18,7 @@ const (
 )
 
 func main() {
-	dbUrl := os.Getenv("HOSTNAME")
-	println(dbUrl)
+
 	config, err := config.NewConfig(config.WithLogLevel(), config.WithPort(), config.WithDbUrl(), config.WithRegistryURI(), config.WithEnv())
 	instanceId := discovery.GenerateInstanceID(serviceName)
 	if err != nil {
@@ -39,14 +38,14 @@ func main() {
 		os.Exit(1)
 
 	}
-	srv := knight.NewKnightService(store)
+	svc := knight.NewKnightService(store)
 	registry, err := discovery.NewConsulRegistry(config.RegistryURI)
 	if err != nil {
 		log.Error("unable to create new Registry", "error", err.Error())
 		os.Exit(1)
 	}
 
-	grpc := knightserver.NewKnightServer(serviceName, instanceId, registry, srv, config.Port, log)
+	srv := knightserver.NewKnightServer(serviceName, instanceId, registry, svc, config.Port, log)
 	log.Info("Server running")
-	grpc.Run()
+	srv.Run()
 }

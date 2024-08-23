@@ -1,0 +1,89 @@
+syntax = "proto3";
+package knight.v1;
+import "google/api/annotations.proto";
+// import "google/rpc/error_details.proto";
+option go_package = "github.com/lafetz/quest-demo/knight/proto/knight";
+message Knight {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  bool is_active = 4;
+}
+message AddKnightRequest {
+  string name = 1;
+  string email = 2;
+}
+
+message AddKnightResponse {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  bool is_active = 5;
+}
+message GetKnightStatusRequest {
+  string email = 1;
+}
+message GetKnightStatusResponse {
+  bool is_active = 1;
+}
+
+message GetKnightsRequest {}
+
+message GetKnightsResponse {
+  repeated Knight knights = 1;
+}
+message UpdateStatusRequest {
+  bool active = 1;
+  string email = 2;
+}
+message UpdateStatusResponse {}
+
+message GetKnightRequest {
+  string email = 1;
+}
+
+message GetKnightResponse {
+  Knight knight = 1;
+}
+message DeleteKnightRequest {
+  string email = 1;
+}
+message DeleteKnightResponse {}
+
+service KnightService {
+  rpc AddKnight(AddKnightRequest) returns (AddKnightResponse) {
+    option (google.api.http) = {
+      post: "/v1/knights"
+      body: "*"
+    };
+  }
+
+  rpc GetKnightStatus(GetKnightStatusRequest) returns (GetKnightStatusResponse);
+
+  rpc UpdateStatus(UpdateStatusRequest) returns (UpdateStatusResponse) {
+    option (google.api.http) = {
+      patch: "/v1/knights/{email}"
+      body: "*"
+    };
+  }
+
+  rpc GetKnights(GetKnightsRequest) returns (GetKnightsResponse) {
+    option (google.api.http) = {
+      get: "/v1/knights"
+    };
+  }
+
+  rpc GetKnight(GetKnightRequest) returns (GetKnightResponse) {
+    option (google.api.http) = {
+      get: "/v1/knights/{email}"
+
+    };
+  }
+
+  rpc DeleteKnight(DeleteKnightRequest) returns (DeleteKnightResponse) {
+    option (google.api.http) = {
+      delete: "/v1/knights/{email}"
+
+    };
+  }
+}
