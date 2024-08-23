@@ -1,6 +1,6 @@
 # QUEST-MICRO
 
-Go microservice, organized in a monorepo structure using gRPC to facilitate interactions between services.The system is designed to demonstrate how these technologies can be integrated to build a scalable and efficient distributed architecture.
+Go microservice, organized in a monorepo structure using gRPC to facilitate interactions between services.The medieval themed system is designed to demonstrate how these technologies can be integrated to build a scalable and efficient distributed architecture.
 
 ## Diagram
 
@@ -26,6 +26,10 @@ Go microservice, organized in a monorepo structure using gRPC to facilitate inte
 - [ ] Tracing with Jaeger
 
 ## imgs
+
+### Loki+Grafana
+
+<img width="1028" alt="image" src="https://raw.githubusercontent.com/Lafetz/quest-demo/main/docs/logs.png">
 
 ## Getting Started
 
